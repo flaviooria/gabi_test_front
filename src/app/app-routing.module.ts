@@ -1,7 +1,38 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { Error404PageComponent } from './shared/pages/error404-page/error404-page.component';
 
-const routes: Routes = [];
+const routes: Routes = [
+  {
+    path: 'auth',
+    loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule),
+  },
+  {
+    path: 'services',
+    loadChildren: () => import('./servicio/servicio.module').then(m => m.ServicioModule),
+  },
+  {
+    path: 'helper',
+    loadChildren: () => import('./worker/worker.module').then(m => m.WorkerModule),
+  },
+  {
+    path: 'customer',
+    loadChildren: () => import('./client/client.module').then(m => m.ClientModule),
+  },
+    {
+    path: '404',
+    component: Error404PageComponent,
+  },
+  {
+    path: '',
+    redirectTo: 'auth',
+    pathMatch: 'full',
+  },
+  {
+    path: '**',
+    redirectTo: '404',
+  },
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
