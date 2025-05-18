@@ -11,8 +11,12 @@ import { LayoutPageComponent } from './pages/layout-page/layout-page.component';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
-import { DateFormatPipe } from './pipes/date-format.pipe';
 import { ServicioModule } from '../servicio/servicio.module';
+import { CalendarPageComponent } from './pages/calendar-page/calendar-page.component';
+import { DateFormatPipe } from './pipes/date-format.pipe';
+import { ScheduleEditPageComponent } from './pages/schedule-edit-page/schedule-edit-page.component';
+import { EditWorkerPageComponent } from './pages/edit-worker-page/edit-worker-page.component';
+import { UserPfpPipe } from './pipes/user-pfp.pipe';
 
 
 @NgModule({
@@ -23,7 +27,11 @@ import { ServicioModule } from '../servicio/servicio.module';
     NewWorkerPageComponent,
     ListPageComponent,
     LayoutPageComponent,
+    CalendarPageComponent,
     DateFormatPipe,
+    UserPfpPipe,
+    ScheduleEditPageComponent,
+    EditWorkerPageComponent,
   ],
   imports: [
     CommonModule,

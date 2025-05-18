@@ -7,7 +7,7 @@ import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
 import { RouterModule } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
-import { DateFormatPipe } from './worker/pipes/date-format.pipe';
+import { DateFormatPipe } from './servicio/pipes/date-format.pipe';
 
 @NgModule({
   declarations: [
@@ -18,7 +18,8 @@ import { DateFormatPipe } from './worker/pipes/date-format.pipe';
     BrowserAnimationsModule,
     AppRoutingModule,
     SharedModule,
-    RouterModule
+    RouterModule,
+    
   ],
   providers: [
     provideClientHydration(withEventReplay()),

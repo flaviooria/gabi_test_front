@@ -4,14 +4,16 @@ import { ServicesListPageComponent } from './pages/services-list-page/services-l
 import { ServiceDetailPageComponent } from './pages/service-detail-page/service-detail-page.component';
 import { ServiceRequestPageComponent } from './pages/service-request-page/service-request-page.component';
 import { LayoutPageComponent } from './pages/layout-page/layout-page.component';
+import { ServicesHistoryPageComponent } from './pages/services-history-page/services-history-page.component';
 
 const routes: Routes = [
   {
     path: '',
     component: LayoutPageComponent,
     children: [
-      { path: 'new-service', component: ServiceRequestPageComponent },
+      { path: 'request', component: ServiceRequestPageComponent },
       { path: 'list', component: ServicesListPageComponent},
+      { path: 'history', component: ServicesHistoryPageComponent},
       { path: ':id', component: ServiceDetailPageComponent},
       { path: '**', redirectTo:'list'},
     ],

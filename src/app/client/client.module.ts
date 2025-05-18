@@ -10,7 +10,9 @@ import { SharedModule } from '../shared/shared.module';
 import { PaymentMethodComponent } from './pages/payment-method/payment-method.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AddPaymentMethodComponent } from './components/add-payment-method/add-payment-method.component';
-
+import { EditProfilePageComponent } from './pages/edit-profile-page/edit-profile-page.component';
+import { DateFormatPipe } from './pipes/date-format.pipe';
+import { UserPfpPipe } from './pipes/user-pfp.pipe';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,10 @@ import { AddPaymentMethodComponent } from './components/add-payment-method/add-p
     LayoutPageComponent,
     ListPageComponent,
     PaymentMethodComponent,
-    AddPaymentMethodComponent
+    AddPaymentMethodComponent,
+    EditProfilePageComponent,
+    DateFormatPipe,
+    UserPfpPipe
   ],
   imports: [
     CommonModule,

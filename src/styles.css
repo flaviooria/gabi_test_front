@@ -10,16 +10,18 @@
 .logo {
   margin: 0;
   /* font-size: 2.5rem; */
-  color: white;
+  /* color: white; */
   font-family: 'Open Sans Condensed', sans-serif;
-  font-weight: normal;
+  font-weight: bolder;
   text-transform: uppercase;
   letter-spacing: 5px;
-  background: linear-gradient(to right, #004350, #fa3c07);
-  -webkit-background-clip: text;
-  color: transparent;
+  /* background: linear-gradient(to right, #66005f, #16005f); */
+  /* -webkit-background-clip: text; */
   text-align: center;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.475);
+  color: #FFFFFF;
+  text-shadow: 
+    2px 0px 4px #66005f,
+    2px 2px 4px #16005f;
 }
 
 
@@ -47,9 +49,13 @@ button, .button {
   color: #e08e00;
 }
 
-.my-bg-yellow {
-  background-color: #faa307;
+.my-bg-light-teal {
+  background-color: #005f73;
 }
+
+/* .my-bg-light-teal {
+  background-color: #faa307;
+} */
 
 .my-bg-yellower {
   background-color: #e08e00;
@@ -60,7 +66,7 @@ button, .button {
 }
 
 .my-bg-teal {
-  background-color: #005f73;
+  background-color: #004756;
 }
 
 .my-bg-sky {
@@ -81,7 +87,7 @@ button, .button {
 
 /* header */
 .shared-header {
-  background-color: #faa307;
+  background-color: #005f73;
   padding: 1rem 0.5rem;
   height: 4.5rem;
   display: flex;
@@ -120,25 +126,24 @@ main {
 
 /* Generales */
 .card {
-  /* background-color: white; no incluye color por si las card son diferentes */ 
   border-radius: 8px;
   padding: 1.5rem;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   margin-bottom: 2rem;
 }
 
-.button {
+/* .button {
   display: inline-block;
   padding: 0.75rem 1.5rem;
   /* background-color: #faa307;
-  color: white; */
+  color: white; 
   border: none;
   border-radius: 6px;
   text-decoration: none;
   font-weight: bold;
   margin-top: 1rem;
   transition: background-color 0.3s;
-}
+} */
 
 .link {
   display: block;
@@ -152,17 +157,15 @@ main {
 .button {
   display: inline-block;
   padding: 0.75rem 1.5rem;
-  /* background-color: #faa307;
-  color: white; */
+  color: white;
   border: none;
   border-radius: 6px;
   text-decoration: none;
   font-weight: bold;
-  margin-top: 1rem;
   transition: background-color 0.3s;
-  font-family: 'Fredoka', sans-serif;
+  font-family: 'Nunito', sans-serif;
 }
 
 .button:hover {
-  background-color: #e08e00;
+  background-color: #00748b;
 }
