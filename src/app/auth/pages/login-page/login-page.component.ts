@@ -12,6 +12,7 @@ export class LoginPageComponent {
 
   public userForm: FormGroup;
   public fail = false;
+  public loading = false;
 
   constructor(
     private fb: FormBuilder,
@@ -30,11 +31,15 @@ export class LoginPageComponent {
       return;
     }
 
-    
+
+    this.loading = true;
     this.authService.login(this.userForm.get('email')?.value, this.userForm.get('password')?.value)
     .subscribe( user => {
-      if (!user) this.fail = true;
-      else this.router.navigate(['/helper']);
+      if (!user) {
+        this.fail = true;
+        this.loading = false;
+      }
+      else this.router.navigate(['/services']);
     })
 
     this.userForm.reset();

@@ -26,6 +26,11 @@ export class AuthService {
       map(resultado => resultado.data)
     );
   }
+  changePassword(passwordData: any): Observable<any> {
+    const userId = localStorage.getItem('token');
+    console.log(passwordData);
+    return this.httpClient.post(`${this.baseUrl}/users/${userId}/change-password-authorization`, passwordData);
+  }
 
   get currentUser() : User|undefined {
     if ( !this.user ) return undefined;
@@ -33,19 +38,19 @@ export class AuthService {
   }
 
   checkAuthenticacion(): Observable<boolean>{
-   
     if (!localStorage.getItem('token')) return of(false);
    
     const token = localStorage.getItem('token');
+    
     const url = `${ this.baseUrl }/users/${token}`;
+    
     return this.httpClient.get<any>(url)
     .pipe (
-      tap ( user => this.user = user.data),
       tap ( user => this.user = user.data),
       map ( user => !!user.data),
       catchError ( err => of(false))
     )
-}
+  }
 
   login (email: string, password: string):Observable<User | false> {
     const body = { email, password };
@@ -67,6 +72,7 @@ export class AuthService {
   logout () {
     this.user = undefined;
     localStorage.clear();
+    
   }
 
 

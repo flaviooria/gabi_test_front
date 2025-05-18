@@ -1,7 +1,7 @@
 <section class="dark:bg-gray-900 dark:text-cyan-100">
     <div class="flex flex-col md:flex-row min-h-screen w-full">
       <!-- Left Section (Decorative) -->
-      <div class="my-bg-yellow text-white p-8 md:p-12 md:w-1/2 relative overflow-hidden">
+      <div class="my-bg-teal text-white p-8 md:p-12 md:w-1/2 relative overflow-hidden">
         <div class="z-10 relative">
           <h2 class="logo md:text-7xl text-5xl">Haus2House</h2>
           <div class="mt-20 md:mt-32">
@@ -56,7 +56,7 @@
   
       <!-- Right Section (Login form) -->
       <div class="p-8 md:p-12 md:w-1/2 w-full flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-        <div class="w-full bg-white shadow-xl p-8 rounded-lg">
+        <div *ngIf="!loading; else cargando" class="w-full bg-white shadow-xl p-8 rounded-lg">
           <div class="text-right mb-4">
             <span class="text-gray-500 dark:text-gray-400">¿No tienes cuenta?</span>
             <a href="/auth/register" class="my-yellow dark:text-yellow-400 font-medium">Regístrate aquí</a>
@@ -94,6 +94,10 @@
             </button>
           </form>
         </div>
+
+        <ng-template #cargando>
+          <shared-loading></shared-loading>
+        </ng-template>
       </div>
     </div>
 </section>
