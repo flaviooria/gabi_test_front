@@ -5,11 +5,11 @@ import { ServicioService } from '../../../servicio/services/servicio.service';
 import { Service } from '../../../servicio/interfaces/service.interface';
 
 @Component({
-  selector: 'services-list-page',
+  selector: 'services-history-page',
   standalone: false,
-  templateUrl: './services-list-page.component.html',
+  templateUrl: './services-history-page.component.html',
 })
-export class ServicesListPageComponent implements OnInit {
+export class ServicesHistoryPageComponent implements OnInit {
   public services: Service[] = [];
   public isLoading = true;
   public userRole?: string;
@@ -27,7 +27,7 @@ export class ServicesListPageComponent implements OnInit {
       return;
     }
 
-    this.servicioService.pendingServices().subscribe({
+    this.servicioService.serviceHistory().subscribe({
       next: (services) => {
         this.services = services;
         this.isLoading = false;

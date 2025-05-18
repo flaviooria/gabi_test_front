@@ -16,6 +16,8 @@ export interface Service {
     worker_location:   null;
     status:            string;
     total_amount:      number;
+    payment_method:    'card' | 'cash';
+    payment_status:    'pendiente' | 'pagado' | 'emitido';
     payment_stripe_id: null;
     client_rating:     null;
     worker_rating:     null;
