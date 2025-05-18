@@ -1,4 +1,8 @@
-<div class="flex flex-wrap lg:flex-nowrap items-center justify-center p-12">
+<ng-template #cargando>
+  <shared-loading></shared-loading>
+</ng-template>
+
+<div *ngIf="!loading; else cargando" class="flex flex-wrap lg:flex-nowrap items-center justify-center p-12">
     <div class="mx-auto w-full max-w-[550px] bg-white card">
         <h2 class="text-xl font-bold mb-4 font-quicksand text-teal-700">Método de Pago</h2>
         <div *ngIf="paymentMethods.length > 0; else noPaymentMethod">

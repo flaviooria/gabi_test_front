@@ -16,22 +16,24 @@ export class PaymentMethodComponent implements OnInit {
   public add_payment_method: boolean = false;
   public paymentMethods: any[] = [];
   public hasPaymentMethod: boolean = false;
+  public loading: boolean = false;
 
   constructor(
-    private fb: FormBuilder,
-    private clientService: ClientService,
-    private router: Router
+    private clientService: ClientService
   ) {}
 
   async ngOnInit(): Promise<void> {
+    this.loading = true;
     // Cargar los métodos de pago
     const token = localStorage.getItem('token');
     if (token) {
       this.clientService.getPaymentMethods(token).subscribe(methods => {
         this.paymentMethods = methods;
         this.hasPaymentMethod = methods.length > 0;
+        this.loading = false;
       }, error => {
         console.error('Error al cargar métodos de pago:', error);
+        this.loading = false;
       });
     }
   }
