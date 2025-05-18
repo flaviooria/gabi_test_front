@@ -53,6 +53,7 @@ export class NewWorkerPageComponent implements OnInit {
       services_id: this.fb.array([], Validators.required),
       bio: ['', Validators.required],
       weeklyAvailability: this.fb.array(
+        // Por cada día agrego un grupo 
         this.daysOfWeek.map(() => this.fb.group({
           morningStart: [''],
           morningEnd: [''],
@@ -142,7 +143,7 @@ export class NewWorkerPageComponent implements OnInit {
   }
 
   get currentWorker(): WorkerTemplate {
-    const horarioRelleno = this.rellenarHorario();
+
     const worker: WorkerTemplate = {
       nombre: this.workerForm.value.nombre ?? '',
       email: this.workerForm.value.email ?? '',
@@ -151,7 +152,7 @@ export class NewWorkerPageComponent implements OnInit {
       password: this.workerForm.value.password ?? '',
       dni: this.workerForm.value.dni ?? '',
       services_id: this.workerForm.value.services_id ?? [],
-      disponibilidad: horarioRelleno,
+      horario_semanal: this.workerForm.value.weeklyAvailability,
       bio: this.workerForm.value.bio || null,
       active: this.workerForm.value.active ?? false
     };
@@ -159,56 +160,7 @@ export class NewWorkerPageComponent implements OnInit {
   }
 
 
-  // Para que el usuario no indique cada día del mes, solo debe introducir su horario semanal 
-  rellenarHorario() {
-    const weeklyAvailability = this.weeklyAvailability.value;
-    const disponibilidad: { dia: number; horas: (string | null)[] }[] = [];
-
-    // Obtengo el mes actual
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth();
-
-    // Calcular días en el mes
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    // Obtengo el primer día del mes
-    const firstDayOfMonth = new Date(year, month, 1).getDay();
-    // Ajustar a nuestro daysOfWeek
-    const firstDayIndex = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1; // Le resto 1 porque getDay me devuelve contando desde Lunes = 1 (jueves = 4)
-
-    for (let dia = 1; dia <= daysInMonth; dia++) {
-      // Calcular el día de la semana para este día del mes
-      const dayOfWeekIndex = (firstDayIndex + (dia - 1)) % 7;
-      const daySchedule = weeklyAvailability[dayOfWeekIndex];
-  
-      const horas: (string | null)[] = [];
-  
-      // Por la mañana
-      if (daySchedule.morningStart && daySchedule.morningEnd) {
-        const morningRange = `${daySchedule.morningStart}-${daySchedule.morningEnd}`;
-        horas.push(morningRange);
-      } else {
-        horas.push(null);
-      }
-  
-      // Por la tarde
-      if (daySchedule.afternoonStart && daySchedule.afternoonEnd) {
-        const afternoonRange = `${daySchedule.afternoonStart}-${daySchedule.afternoonEnd}`;
-        horas.push(afternoonRange);
-      } else {
-        horas.push(null);
-      }
-  
-      disponibilidad.push({ dia, horas });
-    }
-
-    return disponibilidad;
-  }
-
   /* TODO
-  Distintas formas de pago
-  pago en efectivo
   recibo en pdf
 
 

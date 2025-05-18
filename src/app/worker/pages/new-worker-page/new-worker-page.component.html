@@ -1,5 +1,8 @@
 <div class="flex items-center justify-center p-12">
     <div class="mx-auto w-full max-w-[550px] bg-white card">
+        <h2 class="mb-3 block font-bold text-2xl text-[#07074D]">
+            Nuevo trabajador
+        </h2>
         <form [formGroup]="workerForm" (ngSubmit)="onSubmit()">
             <div class="mb-5">
                 <label for="nombre" class="mb-3 block text-base font-medium text-[#07074D]">
@@ -99,7 +102,7 @@
 
             <details class="py-4 px-6 mb-5 text-base rounded-md border border-gray-500" open>
                 <summary class="mb-3 block font-medium text-[#07074D]">
-                    Disponibilidad Semanal <i class="ml-3 fa-solid fa-calendar"></i>
+                    Horario Semanal <i class="ml-3 fa-solid fa-calendar"></i>
                 </summary>
                 <div class="grid grid-cols-3 gap-4">
                     <div *ngFor="let day of daysOfWeek; let i = index" class="flex flex-col justify-center items-center">
@@ -137,7 +140,7 @@
     
             <div>
                 <button type="submit"
-                    class="button my-bg-yellow hover:shadow-form w-full rounded-md py-3 px-8 text-center text-base font-semibold text-white outline-none">
+                    class="button my-bg-light-teal hover:shadow-form w-full rounded-md py-3 px-8 text-center text-base font-semibold text-white outline-none">
                     Registrar Trabajador
                 </button>
             </div>

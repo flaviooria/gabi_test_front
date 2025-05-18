@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { delay, switchMap } from 'rxjs';
 import { AuthService } from '../../../auth/services/auth.service';
 import { WorkerService } from '../../../worker/services/worker.service';
-import { Worker } from '../../../worker/interfaces/worker.interface';
+import { ClientComment, Worker } from '../../../worker/interfaces/worker.interface';
 import { User } from '../../../auth/interfaces/user.interface';
 import { ServicioService } from '../../../servicio/services/servicio.service';
 import { ServicesTypes } from '../../../servicio/interfaces/servicesTypes.interface';
@@ -18,6 +18,7 @@ export class ProfilePageComponent {
   // Esto es para ver si entran al perfil ajeno o su mismo perfil
   public selfProfile: boolean = false;
   public services: ServicesTypes[] = [];
+  public comments: ClientComment[] = [];
 
   constructor(
     private workerService: WorkerService,
@@ -34,31 +35,28 @@ export class ProfilePageComponent {
 
     this.activatedRoute.params
     .pipe(
-      delay(800), ///TODO se quitará luego
+      delay(800),
       switchMap(({ id }) => {
-        const userRole = this.authService.currentUser?.rol;
-        // Si no hay ID en la URL y el usuario es un worker, es su propio perfil
-        if (!id && userRole !== 'worker') {
-          this.router.navigate(['/']);
-          return [];
-        }
         // Determinamos si es el perfil propio (selfProfile)
         const token = localStorage.getItem('token');
         let idBuscar = id;
-        if (!id) {
+        if (!id || (id == token)) {
           this.selfProfile = true;
           idBuscar = token;
         }
 
         return this.workerService.getWorkerById(idBuscar);
       })
-    ).subscribe((worker) => {
-      if (!worker) {
-        return this.router.navigate(['/helper']);
-      }
-      this.worker = worker;
-
-      return;
+    ).subscribe({
+        next: (response) => {
+          console.log(response);
+          this.worker = response.worker;
+          this.comments = response.comments;
+        },
+        error: (err) => {
+          this.router.navigate(['/']);
+          console.error('Error:', err);
+        }
     });
   }
 

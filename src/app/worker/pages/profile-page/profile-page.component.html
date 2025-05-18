@@ -4,13 +4,18 @@
   
 <div *ngIf="worker; else cargando" class="bg-gray-100">
     <div class="container mx-auto py-8">
+        <h2 class="ml-4 mb-3 block font-bold text-2xl text-[#07074D]">
+            {{ selfProfile ? 'Mi perfil' : 'Perfil de ' + worker.user.nombre }}
+        </h2>
         <div class="grid grid-cols-3 gap-6 px-4">
             <!-- Left side -->
             <div class="col-span-1">
                 <div class="bg-white shadow rounded-lg p-6">
                     <div class="flex flex-col items-center">
                         <!-- Nombre foto -->
-                        <img src="no_image.png" class="w-32 h-32 bg-gray-300 rounded-full mb-4 shrink-0">
+                        <div class="rounded-full shadow-xl mx-auto -mt-16 h-48 w-48 overflow-hidden" >
+                            <img [src]="worker.user.profile_photo | user_pfp" alt="Foto de perfil" class="object-cover" />
+                        </div>
                         <h1 class="text-xl font-bold font-quicksand text-teal-700">{{ worker!.user!.nombre }}</h1>
 
                         <!-- Rating -->
@@ -25,13 +30,12 @@
 
                         <!-- Para el cliente -->
                         <div *ngIf="!selfProfile" class="mt-6 flex flex-wrap gap-4 justify-center">
-                            <a href="#" class="button my-bg-teal text-white">Contactar</a>
-                            <a href="#" class="button bg-gray-300 hover:bg-gray-400 text-gray-700">Portafolio</a>
+                            <a [routerLink]="['/helper/schedule/' + worker.user_id]" class="button my-bg-teal text-white">Ver horario</a>
                         </div>
 
                         <!-- Para el trabajador -->
                         <div *ngIf="selfProfile" class="mt-4 flex flex-wrap gap-4 justify-center">
-                            <button class="button my-bg-teal text-white">Editar Perfil</button>
+                            <button class="button my-bg-teal text-white" [routerLink]="['/helper/profile/edit']">Editar Perfil</button>
                         </div>
                     </div>
                     <hr class="my-6 border-t border-gray-300">
@@ -50,33 +54,33 @@
                 <div class="bg-white shadow rounded-lg p-6">
                     <h2 class="text-xl font-bold mb-4 font-quicksand text-teal-700">Sobre Mí</h2>
                     <p class="text-gray-700">
-                    {{ worker.bio }}
+                        {{ worker.bio }}
                     </p>
-        
-                    <h2 class="text-xl font-bold mt-6 mb-4 font-quicksand text-teal-700">Comentarios de Clientes</h2>
+
+                    <!-- Comentarios -->
+                    <h2 class="text-xl font-bold mt-6 mb-4 font-quicksand text-teal-700">Comentarios de clientes</h2>
                     <div class="space-y-4">
                     <!-- Comment 1 -->
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <div class="flex items-center mb-2">
-                            <img src="https://randomuser.me/api/portraits/women/94.jpg" alt="User Avatar" class="w-10 h-10 rounded-full mr-3">
-                            <div>
-                                <h3 class="font-semibold">María Gómez</h3>
-                                <p class="text-sm text-gray-500">Publicado el 15 de marzo de 2025</p>
+                        <div *ngFor="let comment of comments" class="bg-white p-4 rounded-lg shadow">
+                            <div class="flex items-center mb-2">
+                                <div class="rounded-full shadow-xl mr-3 h-12 w-12 overflow-hidden" >
+                                    <img [src]="comment.client_pfp | user_pfp" alt="Foto de perfil" class="object-cover" />
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold hover:underline"><a [routerLink]="['/customer/' + comment.client_id]">{{ comment.client_name }}</a></h3>
+                                    <p class="text-sm text-gray-500">Publicado el {{ comment.created_at | dateFormat:'toDate' }}</p>
+                                    <div class="flex items-center mb-1 space-x-1 rtl:space-x-reverse">
+                                        <svg *ngFor="let star of [1, 2, 3, 4, 5]" class="w-4 h-4" [ngClass]="star <= comment.client_rating ? 'text-yellow-300' : 'text-gray-300'" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                                            <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+                                        </svg>                        
+                                    </div>
+                                </div>
                             </div>
+                            <p class="text-gray-700">{{ comment.client_comments }}</p>
                         </div>
-                        <p class="text-gray-700">Carlos hizo un trabajo excelente reparando una fuga en mi baño. Fue puntual, profesional y dejó todo impecable. ¡Lo recomiendo mucho!</p>
-                    </div>
-                    <!-- Comment 2 -->
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <div class="flex items-center mb-2">
-                            <img src="https://randomuser.me/api/portraits/men/94.jpg" alt="User Avatar" class="w-10 h-10 rounded-full mr-3">
-                            <div>
-                                <h3 class="font-semibold">Pedro Martínez</h3>
-                                <p class="text-sm text-gray-500">Publicado el 10 de marzo de 2025</p>
-                            </div>
+                        <div *ngIf="comments.length === 0" class="text-gray-500 text-center">
+                            No hay comentarios de clientes disponibles.
                         </div>
-                        <p class="text-gray-700">Instaló un calentador nuevo en mi casa y todo funcionó perfectamente. Muy buen servicio y precios justos.</p>
-                    </div>
                     </div>
                 </div>
             </div>
