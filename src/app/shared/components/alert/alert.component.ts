@@ -3,7 +3,7 @@ import { AlertService, AlertMessage } from '../../services/alert.service';
 import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
-  selector: 'app-alert',
+  selector: 'shared-alert',
   templateUrl: './alert.component.html',
   standalone: false,
   styles: [`
@@ -19,10 +19,10 @@ import { animate, style, transition, trigger } from '@angular/animations';
     trigger('fadeInOut', [
       transition(':enter', [
         style({ opacity: 0, transform: 'translateY(-20px)' }),
-        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+        animate('2000ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
       ]),
       transition(':leave', [
-        animate('300ms ease-in', style({ opacity: 0, transform: 'translateY(-20px)' }))
+        animate('2000ms ease-in', style({ opacity: 0, transform: 'translateY(-20px)' }))
       ])
     ])
   ]

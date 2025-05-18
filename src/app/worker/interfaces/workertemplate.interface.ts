@@ -1,12 +1,15 @@
+import { Availability } from "./worker.interface";
+
 export interface WorkerTemplate {
     nombre: string;
     email: string;
     telefono?: string | null;
     direccion?: string | null;
-    password: string;
+    password?: string | null;
     dni: string;
     services_id: number[];
-    disponibilidad: { dia: number; horas: (string | null)[] }[];
-    bio?: string;
+    horario_semanal?: Availability[] | null;
+    bio?: string | null;
     active?: boolean;
+    profile_photo?: string | null;
   }

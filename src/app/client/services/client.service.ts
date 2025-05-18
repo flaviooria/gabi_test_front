@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { catchError, delay, map, Observable, of, tap } from 'rxjs';
-import { Client } from '../interfaces/client.interface';
+import { Client, ClientResponse } from '../interfaces/client.interface';
+import { ClientTemplate } from '../interfaces/clientTemplate.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -20,19 +21,20 @@ export class ClientService {
     );
   }
 
-  getClienteById(id: number): Observable<Client>{
+  getClienteById(id: string): Observable<ClientResponse>{
     return this.httpClient.get<any>(`${ this.baseURL }/clients/${ id }`)
     .pipe(
       delay(800),
       catchError(error => of(undefined)),
-      map(respuesta => respuesta.data[0]) 
+      map(respuesta => respuesta.data) 
     );
   }
 
-  updateCliente( cliente: Client ): Observable<Client>{
-    if ( !cliente.id ) throw Error ('Cliente id is required');
+  updateCliente( cliente: ClientTemplate ): Observable<Client>{
+    const userId = localStorage.getItem('token');
+    if ( !userId ) throw Error ('Cliente id is required');
 
-    return this.httpClient.patch<any>(`${this.baseURL}/clients/${ cliente.id }`, cliente)
+    return this.httpClient.put<any>(`${this.baseURL}/clients/${ userId }`, cliente)
     .pipe(
       map(resultado => resultado.data)
     );

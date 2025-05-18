@@ -1,16 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { AuthService } from '../../../auth/services/auth.service';
 import { FlowbiteService } from '../../../services/flowbite.service';
 import { initFlowbite } from 'flowbite';
 import { delay } from 'rxjs';
 import { User } from '../../../auth/interfaces/user.interface';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'shared-header',
   standalone: false,
   templateUrl: './header.component.html',
 })
-export class HeaderComponent {
+export class HeaderComponent { // implements OnDestroy {
 
   public user?:User;
   public profileUrl?:string;
@@ -18,7 +19,8 @@ export class HeaderComponent {
 
   constructor(
     private authService: AuthService,
-    private flowbiteService: FlowbiteService
+    private flowbiteService: FlowbiteService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -46,5 +48,6 @@ export class HeaderComponent {
 
   onLogout() {
     this.authService.logout();
+    this.router.navigate(['/auth/login'])
   }
 }

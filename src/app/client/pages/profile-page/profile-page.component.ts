@@ -3,7 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { delay, switchMap } from 'rxjs';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ClientService } from '../../../client/services/client.service';
-import { Client } from '../../../client/interfaces/client.interface';
+import { Client, WorkerComment } from '../../../client/interfaces/client.interface';
+
 
 @Component({
   selector: 'client-profile-page',
@@ -14,6 +15,7 @@ export class ProfilePageComponent implements OnInit {
   public client?: Client;
   public selfProfile: boolean = false;
   public paymentMethods: any[] = [];
+  public comments: WorkerComment[] = [];
 
   constructor(
     private clientService: ClientService,
@@ -27,27 +29,24 @@ export class ProfilePageComponent implements OnInit {
       .pipe(
         delay(800),
         switchMap(({ id }) => {
-          const userRole = this.authService.currentUser?.rol;
-          if (!id && userRole !== 'client') {
-            this.router.navigate(['/']);
-            return [];
-          }
           const token = localStorage.getItem('token');
           let idBuscar = id;
-          if (!id) {
+          if (!id || (id == token)) {
             this.selfProfile = true;
             idBuscar = token;
           }
 
           return this.clientService.getClienteById(idBuscar);
         })
-      ).subscribe((client) => {
-        if (!client) {
-          return this.router.navigate(['/']);
+      ).subscribe({
+        next: (response) => {
+          this.client = response.client;
+          this.comments = response.comments;
+        },
+        error: (err) => {
+          this.router.navigate(['/']);
+          console.error('Error:', err);
         }
-
-        this.client = client;
-        return;
       });
   }
 

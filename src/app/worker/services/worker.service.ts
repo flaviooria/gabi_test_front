@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { catchError, delay, map, Observable, of, tap } from 'rxjs';
-import { Worker } from '../interfaces/worker.interface';
+import { Availability, Worker, WorkerResponse } from '../interfaces/worker.interface';
 import { User } from '../../auth/interfaces/user.interface';
 import { WorkerTemplate } from '../interfaces/workertemplate.interface';
 import { Service } from '../../servicio/interfaces/service.interface';
@@ -23,11 +23,11 @@ export class WorkerService {
     );
   }
 
-  getWorkerById(id: string): Observable<Worker> {
+  getWorkerById(id: string): Observable<WorkerResponse> {
     return this.httpClient.get<any>(`${this.baseURL}/workers/${id}`)
       .pipe(
         catchError(error => of(undefined)),
-        map(response => response.data[0])
+        map(response => response.data)
       );
   }
 
@@ -38,26 +38,27 @@ export class WorkerService {
     );
   }
 
-  updateWorkerProfile(worker: Worker): Observable<Worker> {
-    if (!worker.id) throw Error('Worker id is required');
-    return this.httpClient.put<any>(`${this.baseURL}/workers/${worker.id}/profile`, worker)
+  updateWorkerProfile(workerData: WorkerTemplate): Observable<Worker> {
+    console.log(workerData);
+    const userId = localStorage.getItem('token');
+    return this.httpClient.put<any>(`${this.baseURL}/workers/${userId}/profile`, workerData)
       .pipe(
         map(response => response.data)
       );
   }
 
-  updateWorkerSchedule(workerId: string, disponibilidad: any): Observable<Worker> {
-    return this.httpClient.put<any>(`${this.baseURL}/workers/${workerId}/schedule`, { disponibilidad })
+  updateWorkerSchedule(workerId: string, disponibilidad: { horario_semanal: Availability[] }): Observable<Worker> {
+    return this.httpClient.put<any>(`${this.baseURL}/workers/${workerId}/schedule`, disponibilidad )
       .pipe(
         map(response => response.data)
       );
   }
 
-  getWorkerHorario(workerId: string): Observable<Service> {
+  getWorkerHorario(workerId: string): Observable<Availability[]> {
     return this.httpClient.get<any>(`${this.baseURL}/workers/${workerId}/schedule`)
       .pipe(
         catchError(error => of(undefined)),
-        map(response => response.data)
+        map(response => JSON.parse(response.data))
       );
   }
 

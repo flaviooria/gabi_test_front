@@ -8,6 +8,8 @@ import { Error404PageComponent } from './pages/error404-page/error404-page.compo
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { LoadingComponent } from './components/loading/loading.component';
 import { AlertComponent } from './components/alert/alert.component';
+import { ChangePasswordModalComponent } from './components/change-password-modal/change-password-modal.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -17,16 +19,20 @@ import { AlertComponent } from './components/alert/alert.component';
     Error404PageComponent,
     SidebarComponent,
     LoadingComponent,
-    AlertComponent
+    AlertComponent,
+    ChangePasswordModalComponent,
   ],
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     SharedRoutingModule
   ],
   exports: [
     HeaderComponent,
     SidebarComponent,
-    LoadingComponent
+    LoadingComponent,
+    AlertComponent,
+    ChangePasswordModalComponent
   ]
 })
 export class SharedModule { }

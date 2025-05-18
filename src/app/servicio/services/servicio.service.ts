@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { ServicesTypes } from '../interfaces/servicesTypes.interface';
 import { map, Observable, tap } from 'rxjs';
 import { Service } from '../interfaces/service.interface';
+import { ServiceTemplate } from '../interfaces/service-template';
 
 @Injectable({
   providedIn: 'root'
@@ -29,12 +30,18 @@ export class ServicioService {
     );
   }
 
-  solicitedServices(): Observable<Service[]> {
+  serviceHistory(): Observable<Service[]> {
     const token = localStorage.getItem('token');
-    return this.httpClient.get<any>(`${this.baseURL}/services/${token}/solicited`)
+    return this.httpClient.get<any>(`${this.baseURL}/services/${token}/history`)
     .pipe(
       map(response => response.data)
     );
+  }
+
+  confirmCashPayment(serviceId: string, userRole: string): Observable<Service> {
+    const status = userRole == 'client' ? 'emitido' : 'pagado'
+    return this.httpClient.put<any>(`${this.baseURL}/services/${serviceId}/confirm-payment`, { payment_status: status })
+      .pipe(map(response => response.data));
   }
 
   getService(servicioId: string): Observable<Service> {
@@ -51,19 +58,21 @@ export class ServicioService {
       );
   }
 
-  createService(serviceData: Partial<Service>): Observable<Service> {
+  requestService(serviceData: ServiceTemplate): Observable<Service> {
     return this.httpClient.post<any>(`${this.baseURL}/services`, serviceData)
       .pipe(
         map(response => response.data)
       );
   }
 
-  rateService(servicioId: string, ratingData: { client_rating?: number, worker_rating?: number, client_comments?: string, worker_comments?: string }): Observable<Service> {
+  rateService(servicioId: string, ratingData: { user_id: string, user_rating: number, user_comments: string}): Observable<Service> {
+    console.log(ratingData);
     return this.httpClient.put<any>(`${this.baseURL}/services/${servicioId}/valorar`, ratingData)
       .pipe(
         map(response => response.data)
       );
   }
+
 
 
 }

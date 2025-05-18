@@ -17,6 +17,8 @@ export class StatusPipe implements PipeTransform {
         return 'Completado';
       case 'cancelled':
         return 'Cancelado';
+      case 'rejected':
+        return 'Rechazado';
       default:
         return 'Desconocido';
     }
