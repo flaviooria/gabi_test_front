@@ -17,7 +17,7 @@ export interface Worker {
 }
 
 export interface Availability {
-  day: number;
+  dia: number;
   horas: ( string | null )[];
 }
 

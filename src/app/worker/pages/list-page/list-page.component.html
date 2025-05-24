@@ -5,54 +5,48 @@
 <div *ngIf="workers.length > 0; else cargando" class="p-12 bg-white">
   <div class="relative overflow-x-auto shadow-md rounded-md border border-[#e0e0e0]">
     <div class="flex items-center justify-between flex-wrap p-4 bg-white">
-      <div>
-        <button id="dropdownActionButton" data-dropdown-toggle="dropdownAction"
-          class="inline-flex items-center text-[#07074D] bg-white border border-[#e0e0e0] hover:bg-gray-100 focus:ring-4 focus:ring-[#6A64F1] font-medium rounded-md text-sm px-3 py-1.5"
-          type="button">
-          <span class="sr-only">Acciones</span>
-          Acciones
-          <svg class="w-2.5 h-2.5 ml-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-          </svg>
-        </button>
-        <div id="dropdownAction" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-md shadow-md w-44">
-          <ul class="py-1 text-sm text-[#07074D]" aria-labelledby="dropdownActionButton">
-            <li>
-              <a href="#" class="block px-4 py-2 hover:bg-gray-100" (click)="performAction('reward')">Recompensar</a>
-            </li>
-            <li>
-              <a href="#" class="block px-4 py-2 hover:bg-gray-100" (click)="performAction('promote')">Promover</a>
-            </li>
-            <li>
-              <a href="#" class="block px-4 py-2 hover:bg-gray-100" (click)="performAction('activate')">Activar cuenta</a>
-            </li>
-          </ul>
-          <div class="py-1">
-            <a href="#" class="block px-4 py-2 text-sm text-[#07074D] hover:bg-gray-100" (click)="performAction('delete')">Eliminar</a>
-          </div>
-        </div>
-      </div>
       <div class="relative">
         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
           <svg class="w-4 h-4 text-[#6B7280]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
           </svg>
         </div>
-        <input type="text" id="table-search-users" [formControl]="searchControl"
+        <!-- <input type="text" id="table-search-users" [formControl]="searchControl"
           class="block p-2 pl-10 text-sm text-[#07074D] border border-[#e0e0e0] rounded-md w-80 bg-white focus:ring-[#6A64F1] focus:border-[#6A64F1]"
-          placeholder="Buscar trabajadores">
+          placeholder="Buscar trabajadores"> -->
+        <div class="flex items-center space-x-4">
+          <input type="text" id="table-search-users" [formControl]="searchControl"
+              class="block p-2 pl-10 text-sm text-[#07074D] border border-[#e0e0e0] rounded-md w-80 bg-white focus:ring-[#6A64F1] focus:border-[#6A64F1]"
+              placeholder="Buscar trabajadores">
+
+          <div class="relative w-48">
+              <input type="text" id="service-search" [formControl]="serviceSearchControl"
+                  class="block p-2 text-sm text-[#07074D] border border-[#e0e0e0] rounded-md w-full bg-white focus:ring-[#6A64F1] focus:border-[#6A64F1]"
+                  placeholder="Buscar servicio"
+                  (focus)="onServiceInputFocus()" (blur)="onServiceInputBlur()">
+              <div *ngIf="showServiceDropdown && filteredServices.length > 0" 
+                  class="absolute top-full left-0 w-full bg-white border border-[#e0e0e0] rounded-md z-10 max-h-40 overflow-y-auto">
+                  <select size="5" class="w-full p-2 text-sm text-[#07074D] bg-white"
+                      (change)="onServiceSelect($event)">
+                      <option *ngFor="let service of filteredServices" [value]="service.id">
+                          {{ service.name }}
+                      </option>
+                  </select>
+              </div>
+          </div>
+
+          <button
+              (click)="resetFilters()"
+              class="ml-4 bg-gray-200 hover:bg-gray-300 text-[#07074D] text-sm font-medium py-2 px-4 rounded-md"
+          >
+              Restablecer
+          </button>
+        </div>
       </div>
     </div>
     <table class="w-full text-sm text-left text-[#6B7280]">
       <thead class="text-xs text-[#07074D] uppercase bg-gray-50">
         <tr>
-          <th scope="col" class="p-4">
-            <div class="flex items-center">
-              <input id="checkbox-all-search" type="checkbox" (change)="toggleAllSelection($event)"
-                class="w-4 h-4 text-[#6A64F1] bg-white border-[#e0e0e0] rounded-sm focus:ring-[#6A64F1] focus:ring-2">
-              <label for="checkbox-all-search" class="sr-only">Seleccionar todos</label>
-            </div>
-          </th>
           <th scope="col" class="px-6 py-3">Nombre</th>
           <th scope="col" class="px-6 py-3">Rating</th>
           <th scope="col" class="px-6 py-3">Habilidades</th>
@@ -63,16 +57,8 @@
       <tbody>
         <tr *ngFor="let worker of filteredWorkers; let i = index"
           class="bg-white border-b border-[#e0e0e0] hover:bg-gray-50">
-          <td class="w-4 p-4">
-            <div class="flex items-center">
-              <input [id]="'checkbox-table-search-' + worker.id" type="checkbox"
-                [checked]="selectedWorkers.has(worker.id)" (change)="toggleWorkerSelection(worker.id)"
-                class="w-4 h-4 text-[#6A64F1] bg-white border-[#e0e0e0] rounded-sm focus:ring-[#6A64F1] focus:ring-2">
-              <label [for]="'checkbox-table-search-' + worker.id" class="sr-only">Seleccionar</label>
-            </div>
-          </td>
           <th scope="row" class="flex items-center px-6 py-4 text-[#07074D] whitespace-nowrap">
-            <img class="w-10 h-10 rounded-full" [src]="worker.user.profile_photo ?? 'no_image.png'" [alt]="worker.user.nombre">
+            <img class="w-10 h-10 rounded-full" [src]="worker.user.profile_photo | user_pfp" [alt]="worker.user.nombre">
             <div class="pl-3">
               <div class="text-base font-semibold">{{ worker.user.nombre }}</div>
               <div class="font-normal text-[#6B7280]">{{ worker.user.email }}</div>
@@ -98,7 +84,10 @@
             </div>
           </td>
           <td class="px-6 py-4">
-            <a href="helper/{{ worker.user_id }}" class="font-medium text-[#6A64F1] hover:underline" >Ver perfil</a>
+            <div class="flex justify-between">
+            <a href="helper/{{ worker.user_id }}" class="font-medium text-[#6A64F1] hover:underline" ><i class="fa-solid fa-eye"></i></a>
+            <button (click)="toggleWorkerActivo(worker.user_id, worker.active == 1)" class="hover:cursor-pointer font-medium text-[#6A64F1] hover:underline" ><i class="fa-solid fa-exclamation" style="color: #ff0000;"></i></button>
+            </div>
           </td>
         </tr>
       </tbody>

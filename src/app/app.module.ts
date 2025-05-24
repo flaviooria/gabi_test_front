@@ -7,7 +7,6 @@ import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
 import { RouterModule } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
-import { DateFormatPipe } from './servicio/pipes/date-format.pipe';
 
 @NgModule({
   declarations: [
@@ -23,7 +22,8 @@ import { DateFormatPipe } from './servicio/pipes/date-format.pipe';
   ],
   providers: [
     provideClientHydration(withEventReplay()),
-    provideHttpClient()
+    provideHttpClient(),
+    { provide: 'APP_ID', useValue: 'haus2houseD' }
   ],
   bootstrap: [AppComponent]
 })

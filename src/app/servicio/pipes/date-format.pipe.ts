@@ -5,8 +5,10 @@ import { Pipe, PipeTransform } from '@angular/core';
   standalone: false
 })
 export class DateFormatPipe implements PipeTransform {
-  transform(value: string | Date, format: 'toDate' | 'toTime'): string {
-    const date = typeof value === 'string' ? new Date(value) : value;
+  transform(value: Date, format: 'toDate' | 'toTime'): string {
+    let date = new Date(value);
+    const offsetMinutes = date.getTimezoneOffset(); // e.g., -120 for CEST
+    date = new Date(date.getTime() + offsetMinutes * 60 * 1000);
 
     if (isNaN(date.getTime())) {
       return 'Fecha inválida';

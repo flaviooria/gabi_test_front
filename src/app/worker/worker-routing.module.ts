@@ -16,10 +16,10 @@ const routes: Routes = [
     path: '',
     component: LayoutPageComponent,
     children: [
-      { path: 'new-worker', component: NewWorkerPageComponent, canActivate: [AdminGuard], },
+      { path: 'new-helper', component: NewWorkerPageComponent, canActivate: [AdminGuard], },
       { path: 'profile/edit', component: EditWorkerPageComponent, canActivate: [WorkerGuard], },
       { path: 'profile', component: ProfilePageComponent, canActivate: [WorkerGuard], },
-      { path: 'list', component: ListPageComponent},
+      { path: 'list', component: ListPageComponent, canActivate: [AdminGuard]},
       { path: 'schedule', component: SchedulePageComponent,},
       { path: 'schedule/edit', component: ScheduleEditPageComponent, canActivate: [WorkerGuard],},
       { path: 'schedule/:id', component: SchedulePageComponent,},

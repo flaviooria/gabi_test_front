@@ -10,6 +10,7 @@ import { LoadingComponent } from './components/loading/loading.component';
 import { AlertComponent } from './components/alert/alert.component';
 import { ChangePasswordModalComponent } from './components/change-password-modal/change-password-modal.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ChooseLocationComponent } from './components/choose-location/choose-location.component';
 
 
 @NgModule({
@@ -21,6 +22,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     LoadingComponent,
     AlertComponent,
     ChangePasswordModalComponent,
+    ChooseLocationComponent,
   ],
   imports: [
     CommonModule,
@@ -32,7 +34,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     SidebarComponent,
     LoadingComponent,
     AlertComponent,
-    ChangePasswordModalComponent
+    ChangePasswordModalComponent,
+    ChooseLocationComponent,
   ]
 })
 export class SharedModule { }

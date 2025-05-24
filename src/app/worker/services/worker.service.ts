@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { environment } from '../../environments/environment';
+import { environment } from '../../environments/environment.prod';
 import { catchError, delay, map, Observable, of, tap } from 'rxjs';
 import { Availability, Worker, WorkerResponse } from '../interfaces/worker.interface';
 import { User } from '../../auth/interfaces/user.interface';
@@ -19,6 +19,13 @@ export class WorkerService {
   getWorkers(): Observable<Worker[]> {
     return this.httpClient.get<any>(`${this.baseURL}/workers`)
     .pipe(
+      map(response => response.data)
+    );
+  }
+
+  filterWorkers(query: string): Observable<Worker[]> {
+    return this.httpClient.get<any>(`${this.baseURL}/workers/filter?q=${encodeURIComponent(query)}`)
+      .pipe(
       map(response => response.data)
     );
   }
@@ -54,6 +61,13 @@ export class WorkerService {
       );
   }
 
+  toggleWorkerActivo(workerId: string): Observable<Worker> {
+    return this.httpClient.get<any>(`${this.baseURL}/workers/${workerId}/toggleActive`)
+      .pipe(
+        map(response => response.data)
+      );
+  }
+
   getWorkerHorario(workerId: string): Observable<Availability[]> {
     return this.httpClient.get<any>(`${this.baseURL}/workers/${workerId}/schedule`)
       .pipe(
@@ -69,10 +83,4 @@ export class WorkerService {
       );
   }
 
-  filterWorkers(query: string): Observable<Worker[]> {
-    return this.httpClient.get<any>(`${this.baseURL}/workers/filter?q=${encodeURIComponent(query)}`)
-    .pipe(
-      map(response => response.data)
-    );
-  }
 }

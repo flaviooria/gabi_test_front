@@ -5,13 +5,14 @@ import { ServiceDetailPageComponent } from './pages/service-detail-page/service-
 import { ServiceRequestPageComponent } from './pages/service-request-page/service-request-page.component';
 import { LayoutPageComponent } from './pages/layout-page/layout-page.component';
 import { ServicesHistoryPageComponent } from './pages/services-history-page/services-history-page.component';
+import { ClientGuard } from '../auth/guards/client.guard';
 
 const routes: Routes = [
   {
     path: '',
     component: LayoutPageComponent,
     children: [
-      { path: 'request', component: ServiceRequestPageComponent },
+      { path: 'request', component: ServiceRequestPageComponent, canActivate: [ClientGuard], },
       { path: 'list', component: ServicesListPageComponent},
       { path: 'history', component: ServicesHistoryPageComponent},
       { path: ':id', component: ServiceDetailPageComponent},

@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
+import { environment } from '../../environments/environment.prod';
 import { HttpClient } from '@angular/common/http';
 import { ServicesTypes } from '../interfaces/servicesTypes.interface';
 import { map, Observable, tap } from 'rxjs';
 import { Service } from '../interfaces/service.interface';
 import { ServiceTemplate } from '../interfaces/service-template';
+import { response } from 'express';
 
 @Injectable({
   providedIn: 'root'
@@ -39,9 +40,13 @@ export class ServicioService {
   }
 
   confirmCashPayment(serviceId: string, userRole: string): Observable<Service> {
-    const status = userRole == 'client' ? 'emitido' : 'pagado'
-    return this.httpClient.put<any>(`${this.baseURL}/services/${serviceId}/confirm-payment`, { payment_status: status })
-      .pipe(map(response => response.data));
+    const status = userRole == 'client' ? 'emitido' : 'pagado';
+    console.log(`${this.baseURL}/services/${serviceId}/confirm-payment`);
+    return this.httpClient.put<any>(`${this.baseURL}/services/${serviceId}/confirm-payment`, { status: status })
+      .pipe(
+        tap(response => console.log(response)),
+        map(response => response.data)
+      );
   }
 
   getService(servicioId: string): Observable<Service> {

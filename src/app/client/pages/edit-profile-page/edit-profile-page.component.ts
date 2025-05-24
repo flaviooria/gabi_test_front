@@ -1,12 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, PLATFORM_ID, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { delay } from 'rxjs';
+import { debounceTime, delay, distinctUntilChanged, Subject } from 'rxjs';
 import { AlertService } from '../../../shared/services/alert.service';
 import { FileUploadService } from '../../../services/file-upload.service';
 import { Client } from '../../interfaces/client.interface';
 import { ClientService } from '../../services/client.service';
 import { ClientTemplate } from '../../interfaces/clientTemplate.interface';
+import { GeocodeService } from '../../../services/geocode.service';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'customer-edit-profile-page',
@@ -14,28 +17,46 @@ import { ClientTemplate } from '../../interfaces/clientTemplate.interface';
   templateUrl: './edit-profile-page.component.html',
 })
 export class EditProfilePageComponent implements OnInit {
+  @ViewChild('mapContainer') mapContainerRef!: ElementRef;
+
   public clientForm: FormGroup;
   public client?: Client;
   public isLoading: boolean = true;
   public selectedFile: File | null = null;
   public profilePhotoUrl: string | null = null;
 
+  // This is new
+  public isBrowser: boolean;
+
   constructor(
     private fb: FormBuilder,
     private clientService: ClientService,
     private alertService: AlertService,
     private router: Router,
-    private fileUploadService: FileUploadService
+    private fileUploadService: FileUploadService,
+
+    // This is new
+    @Inject(PLATFORM_ID) private platformId: Object
+
   ) {
+
+    // This is new
+    this.isBrowser = isPlatformBrowser(platformId);
+
     this.clientForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.maxLength(255)]],
       email: ['', [Validators.required, Validators.email]],
       telefono: ['', [Validators.maxLength(20)]],
       direccion: ['', [Validators.maxLength(255)]],
-      profile_photo: [null],
+
+      // This is new
+      lat: [null, Validators.required],
+      lng: [null, Validators.required],
+
     });
   }
 
+  
   ngOnInit(): void {
     this.loadClientData();
   }
@@ -62,26 +83,30 @@ export class EditProfilePageComponent implements OnInit {
           email: client.user.email || '',
           telefono: client.user.telefono || '',
           direccion: client.user.direccion || '',
-          profile_photo: client.user.profile_photo || null,
+          lat: client.user.latitude || null,
+          lng: client.user.longitude || null,
         });
+        this.profilePhotoUrl = client.user.profile_photo || null;
       });
   }
 
+  
   onFileSelected(event: Event): void {
+    // This is new
+    if (!this.isBrowser) return;
+
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.selectedFile = input.files[0];
-      this.clientForm.patchValue({ profile_photo: this.selectedFile });
     }
   }
+
 
   onSubmit(): void {
     if (this.clientForm.invalid) {
       this.clientForm.markAllAsTouched();
       return;
     }
-
-    console.log(this.selectedFile);
 
     if (this.selectedFile) {
       this.fileUploadService.uploadFile(this.selectedFile).subscribe({
@@ -94,7 +119,7 @@ export class EditProfilePageComponent implements OnInit {
         },
       });
     } else {
-      this.sendClientData(this.clientForm.value.profile_photo ?? null);
+      this.sendClientData(this.profilePhotoUrl);
     }
   }
 
@@ -105,6 +130,8 @@ export class EditProfilePageComponent implements OnInit {
       telefono: this.clientForm.value.telefono ?? null,
       direccion: this.clientForm.value.direccion ?? null,
       profile_photo: profilePhotoUrl,
+      lat: this.clientForm.value.lat ?? null,
+      lng: this.clientForm.value.lng ?? null,
     };
 
     if (!this.client?.id) {
@@ -116,7 +143,7 @@ export class EditProfilePageComponent implements OnInit {
       next: (client) => {
         console.log(client);
         this.alertService.success(`${client.user.nombre} actualizado!`);
-        // this.router.navigate(['/customer/profile']);
+        this.router.navigate(['/customer/profile']);
       },
       error: (err) => {
         this.alertService.error(err.error.message || 'Error desconocido');
@@ -124,7 +151,28 @@ export class EditProfilePageComponent implements OnInit {
     });
   }
 
+  
+  openChooseLocationModal(): void {
+    if (!this.isBrowser) return;
+
+    const modal = document.getElementById('chooseLocationModal');
+    if (modal) {
+      modal.classList.remove('hidden');
+    }
+  }
+
+  handleLocationSelected(location: { address: string, lat: number, lng: number }): void {
+    this.clientForm.patchValue({
+      direccion: location.address,
+      lat: location.lat,
+      lng: location.lng
+    });
+  }
+
   openChangePasswordModal(): void {
+    // This is new
+    if (!this.isBrowser) return;
+
     const modal = document.getElementById('changePasswordModal');
     if (modal) {
       modal.classList.remove('hidden');

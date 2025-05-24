@@ -250,6 +250,8 @@ export class ServiceRequestPageComponent implements OnInit {
       return;
     }
 
+    console.log(this.currentService);
+
     this.servicioService.requestService(this.currentService).subscribe({
       next: (service) => {
         this.alertService.success('Servicio solicitado con éxito');

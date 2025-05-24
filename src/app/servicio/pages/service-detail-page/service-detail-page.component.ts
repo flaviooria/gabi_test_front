@@ -5,6 +5,7 @@ import { AuthService } from '../../../auth/services/auth.service';
 import { ServicioService } from '../../../servicio/services/servicio.service';
 import { Service } from '../../../servicio/interfaces/service.interface';
 import { AlertService } from '../../../shared/services/alert.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'service-detail-page',
@@ -15,6 +16,8 @@ export class ServiceDetailPageComponent implements OnInit {
   public service?: Service;
   public isLoading = true;
   public userRole!:string;
+  public currentTime: Date = new Date();
+
   constructor(
     private servicioService: ServicioService,
     private activatedRoute: ActivatedRoute,
@@ -38,6 +41,7 @@ export class ServiceDetailPageComponent implements OnInit {
       )
       .subscribe((service) => {
         this.isLoading = false;
+        
         if (!service) {
           this.router.navigate(['/']);
           return;
@@ -60,6 +64,10 @@ export class ServiceDetailPageComponent implements OnInit {
 
         this.service = service;
       });
+
+    setInterval(() => {
+      this.currentTime = new Date();
+    }, 2000);  
   }
 
   goBack(): void {
@@ -71,9 +79,11 @@ export class ServiceDetailPageComponent implements OnInit {
       this.servicioService.updateServiceStatus(this.service.id, status).subscribe({
         next: (updatedService) => {
           this.service = updatedService;
+          this.alertService.success(`Servicio actualizado a ${status}`);
         },
         error: (err) => {
           console.error('Error al cambiar el estado del servicio:', err);
+          this.alertService.error('Error al actualizar el estado del servicio');
         }
       });
     }
@@ -81,22 +91,58 @@ export class ServiceDetailPageComponent implements OnInit {
 
   acceptService(): void {
     this.changeServiceStatus('accepted');
-    location.reload();
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
   }
 
   rejectService(): void {
     this.changeServiceStatus('cancelled');
-    location.reload();
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
   }
 
   cancelService(): void {
-    this.changeServiceStatus('cancelled');
-    this.openRatingModal();
+    Swal.fire({
+      title: '¿Cancelar servicio?',
+      text: '¿Estás seguro de que quieres cancelar este servicio?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#6A64F1',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, ¡cancelar!',
+      cancelButtonText: 'No, mantener',
+      buttonsStyling: true,
+      customClass: {
+        confirmButton: 'swal2-confirm btn my-bg-teal text-white font-semibold py-2 px-4 rounded-md',
+        cancelButton: 'swal2-cancel btn bg-red-500 text-white font-semibold py-2 px-4 rounded-md'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.changeServiceStatus('cancelled');
+        this.openRatingModal();
+        Swal.fire({
+          title: '¡Cancelado!',
+          text: 'El servicio ha sido cancelado correctamente',
+          icon: 'success',
+          confirmButtonColor: '#6A64F1',
+          customClass: {
+            confirmButton: 'swal2-confirm btn my-bg-teal text-white font-semibold py-2 px-4 rounded-md'
+          }
+        });
+        setTimeout(() => {
+          location.reload();
+        }, 1000);
+      }
+    });
   }
 
   startService(): void {
     this.changeServiceStatus('in_progress');
-    location.reload();
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
   }
 
   completeService(): void {
@@ -132,5 +178,21 @@ export class ServiceDetailPageComponent implements OnInit {
     }
     const diffMs = end.getTime() - start.getTime();
     return Math.round(diffMs / (1000 * 60 * 60)); // Convertir a horas
+  }
+
+  canStartService(): boolean {
+    if (!this.service?.start_time) return false;
+    let startTime = new Date(this.service.start_time);
+    const offsetMinutes = startTime.getTimezoneOffset();
+    startTime = new Date(startTime.getTime() + offsetMinutes * 60 * 1000);
+    return this.currentTime >= startTime;
+  }
+
+  canCompleteServiceOrConfirmPayment(): boolean {
+    if (!this.service?.end_time) return false;
+    let endTime = new Date(this.service.end_time);
+    const offsetMinutes = endTime.getTimezoneOffset();
+    endTime = new Date(endTime.getTime() + offsetMinutes * 60 * 1000);
+    return this.currentTime >= endTime;
   }
 }

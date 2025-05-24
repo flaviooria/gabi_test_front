@@ -23,7 +23,7 @@
       <div>{{ user?.nombre }}</div>
       <div class="font-medium truncate">{{ user?.email }}</div>
     </div>
-    <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownInformationButton">
+    <ul *ngIf="!isAdmin" class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownInformationButton">
       <li>
         <a href="{{ profileUrl }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Perfil</a>
       </li>
@@ -33,7 +33,7 @@
       <li *ngIf="isWorker">
         <a href="helper/calendar" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Calendario</a>
       </li>
-      <li *ngIf="!isWorker">
+      <li *ngIf="!isWorker && !isAdmin">
         <a href="customer/payment-method" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Mi tarjeta</a>
       </li>
     </ul>

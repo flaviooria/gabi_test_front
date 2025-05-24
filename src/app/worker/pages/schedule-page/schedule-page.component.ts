@@ -24,6 +24,7 @@ export class SchedulePageComponent implements OnInit {
     { name: 'Sábado', index: 5, color: 'bg-teal-500' },
     { name: 'Domingo', index: 6, color: 'bg-red-500' }
   ];
+  public day_hours = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 0, 1, 2, 3, 4, 5];
 
   constructor(
     private workerService: WorkerService,
@@ -42,7 +43,6 @@ export class SchedulePageComponent implements OnInit {
           let idBuscar = id;
           if (!id || (id == token)) {
             this.selfProfile = true;
-            console.log('poto');
             idBuscar = token;
           }
   
@@ -51,6 +51,7 @@ export class SchedulePageComponent implements OnInit {
       ).subscribe({
         next: (weeklySchedule) => {
           this.weeklySchedule = weeklySchedule;
+          console.log(weeklySchedule);
           this.isLoading = false;
         },
         error: (err) => {
@@ -60,11 +61,10 @@ export class SchedulePageComponent implements OnInit {
       });
   }
 
-  isHourAvailable(dayIndex: number, hour: string): boolean {
-    const daySchedule = this.weeklySchedule.find(s => s.day === dayIndex);
+  isHourAvailable(dayIndex: number, hourNum: number): boolean {
+    const daySchedule = this.weeklySchedule.find(schedule_day => schedule_day.dia === dayIndex);
     if (!daySchedule || !daySchedule.horas) return false;
 
-    const hourNum = parseInt(hour);
     // Chequeamos ambos turnos (horas[0] y horas[1])
     return daySchedule.horas.some(range => {
       if (!range) return false; // Ignoramos null

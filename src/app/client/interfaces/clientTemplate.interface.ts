@@ -4,4 +4,6 @@ export interface ClientTemplate {
   telefono: string | null;
   direccion: string | null;
   profile_photo: string | null;
+  lat: number | null;
+  lng: number | null;
 }

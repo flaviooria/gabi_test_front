@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { debounceTime, delay, switchMap } from 'rxjs';
@@ -9,6 +9,9 @@ import { Worker } from '../../interfaces/worker.interface';
 import { AlertService } from '../../../shared/services/alert.service';
 import { FileUploadService } from '../../../services/file-upload.service';
 import { WorkerTemplate } from '../../interfaces/workertemplate.interface';
+import { GeocodeService } from '../../../services/geocode.service';
+import { isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID } from '@angular/core';
 
 @Component({
   selector: 'worker-edit-worker-page',
@@ -17,6 +20,8 @@ import { WorkerTemplate } from '../../interfaces/workertemplate.interface';
   styles: ``,
 })
 export class EditWorkerPageComponent implements OnInit {
+  @ViewChild('mapContainer') mapContainerRef!: ElementRef;
+
   public workerForm: FormGroup;
   public newService: FormControl = new FormControl('');
   public existingServices: ServicesTypes[] = [];
@@ -25,7 +30,8 @@ export class EditWorkerPageComponent implements OnInit {
   public worker?: Worker;
   public isLoading: boolean = true;
   public selectedFile: File | null = null;
-  public profilePhotoUrl: string | null = null; // Para almacenar la URL de la foto
+  public profilePhotoUrl: string | null = null;
+  public isBrowser: boolean;
 
   constructor(
     private fb: FormBuilder,
@@ -33,8 +39,12 @@ export class EditWorkerPageComponent implements OnInit {
     private workerService: WorkerService,
     private alertService: AlertService,
     private router: Router,
-    private fileUploadService: FileUploadService // Inyecta el servicio
+    private fileUploadService: FileUploadService,
+    private geocodeService: GeocodeService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+
     this.workerForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
@@ -43,8 +53,9 @@ export class EditWorkerPageComponent implements OnInit {
       dni: ['', [Validators.required, Validators.pattern(/^\d{8}[A-Z]$/)]],
       services_id: this.fb.array([], Validators.required),
       bio: ['', Validators.required],
-      profile_photo: [null], // Ahora será una URL (string), no un archivo
       active: [0, Validators.required],
+      lat: [null, Validators.required],
+      lng: [null, Validators.required],
     });
   }
 
@@ -94,8 +105,10 @@ export class EditWorkerPageComponent implements OnInit {
           dni: worker.dni || '',
           bio: worker.bio || '',
           active: worker.active,
-          profile_photo: worker.user.profile_photo || null, // Carga la URL existente
+          lat: worker.user.latitude || null,
+          lng: worker.user.longitude || null,
         });
+        this.profilePhotoUrl = worker.user.profile_photo || null;
 
         const services = JSON.parse(worker.services_id);
         services.forEach((serviceId: number) => {
@@ -120,6 +133,8 @@ export class EditWorkerPageComponent implements OnInit {
   }
 
   toggleServiceInput(): void {
+    if (!this.isBrowser) return;
+
     this.showServiceInput = !this.showServiceInput;
     this.serviceSearchActive = this.showServiceInput;
     if (this.showServiceInput) {
@@ -128,6 +143,8 @@ export class EditWorkerPageComponent implements OnInit {
   }
 
   onAddService(service?: ServicesTypes): void {
+    if (!this.isBrowser) return;
+
     if (!service && !this.newService.value) return;
 
     const serviceValue = service
@@ -148,22 +165,43 @@ export class EditWorkerPageComponent implements OnInit {
   }
 
   onRemoveService(index: number): void {
+    if (!this.isBrowser) return;
+
     this.services.removeAt(index);
   }
 
   openChangePasswordModal(): void {
+    if (!this.isBrowser) return;
+
     const modal = document.getElementById('changePasswordModal');
     if (modal) {
       modal.classList.remove('hidden');
     }
   }
 
-  // Esto es porque angula no actualiza automáticamente los File
+  openChooseLocationModal(): void {
+    if (!this.isBrowser) return;
+
+    const modal = document.getElementById('chooseLocationModal');
+    if (modal) {
+      modal.classList.remove('hidden');
+    }
+  }
+
+  handleLocationSelected(location: { address: string; lat: number; lng: number }): void {
+    this.workerForm.patchValue({
+      direccion: location.address,
+      lat: location.lat,
+      lng: location.lng,
+    });
+  }
+
   onFileSelected(event: Event): void {
+    if (!this.isBrowser) return;
+
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.selectedFile = input.files[0];
-      this.workerForm.patchValue({ profile_photo: this.selectedFile });
     }
   }
 
@@ -173,20 +211,18 @@ export class EditWorkerPageComponent implements OnInit {
       return;
     }
 
-    // Si hay un archivo seleccionado, súbelo primero
     if (this.selectedFile) {
       this.fileUploadService.uploadFile(this.selectedFile).subscribe({
         next: (url) => {
           this.profilePhotoUrl = url;
-          this.sendWorkerData(url); // Envía los datos después de subir la foto
+          this.sendWorkerData(url);
         },
         error: (err) => {
           this.alertService.error('Error al subir la foto: ' + (err.message || 'Error desconocido'));
         },
       });
     } else {
-      // Si no hay archivo, envía los datos directamente con la URL existente o null
-      this.sendWorkerData(this.workerForm.value.profile_photo ?? null);
+      this.sendWorkerData(this.profilePhotoUrl ?? null);
     }
   }
 
@@ -194,13 +230,15 @@ export class EditWorkerPageComponent implements OnInit {
     const workerData: WorkerTemplate = {
       nombre: this.workerForm.value.nombre ?? '',
       email: this.workerForm.value.email ?? '',
-      telefono: this.workerForm.value.telefono ?? '',
-      direccion: this.workerForm.value.direccion ?? '',
+      telefono: this.workerForm.value.telefono ?? null,
+      direccion: this.workerForm.value.direccion ?? null,
       dni: this.workerForm.value.dni ?? '',
       services_id: this.workerForm.value.services_id ?? [],
       bio: this.workerForm.value.bio ?? '',
       active: this.workerForm.value.active,
-      profile_photo: profilePhotoUrl, // Envía la URL de la foto
+      profile_photo: profilePhotoUrl,
+      lat: this.workerForm.value.lat ?? null,
+      lng: this.workerForm.value.lng ?? null,
     };
 
     this.workerService.updateWorkerProfile(workerData).subscribe({

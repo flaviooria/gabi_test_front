@@ -8,6 +8,8 @@ export interface User {
     profile_photo:     null;
     telefono:          null;
     direccion:         null;
+    latitude:          number | null;
+    longitude:         number | null;
     created_at:        Date;
     updated_at:        Date;
 }

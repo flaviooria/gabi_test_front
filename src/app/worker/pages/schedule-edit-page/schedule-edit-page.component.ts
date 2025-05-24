@@ -77,7 +77,7 @@ export class ScheduleEditPageComponent implements OnInit {
     }));
 
     availability.forEach((availability: Availability) => {
-      const dia = availability.day;
+      const dia = availability.dia;
       const horas = availability.horas;
 
       if (horas) {

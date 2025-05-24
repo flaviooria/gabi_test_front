@@ -5,6 +5,8 @@ export interface WorkerTemplate {
     email: string;
     telefono?: string | null;
     direccion?: string | null;
+    lat: number | null;
+    lng: number | null;
     password?: string | null;
     dni: string;
     services_id: number[];

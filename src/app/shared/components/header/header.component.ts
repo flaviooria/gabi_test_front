@@ -5,6 +5,7 @@ import { initFlowbite } from 'flowbite';
 import { delay } from 'rxjs';
 import { User } from '../../../auth/interfaces/user.interface';
 import { Router } from '@angular/router';
+import { fail } from 'assert';
 
 @Component({
   selector: 'shared-header',
@@ -16,6 +17,7 @@ export class HeaderComponent { // implements OnDestroy {
   public user?:User;
   public profileUrl?:string;
   public isWorker?:boolean;
+  public isAdmin?:boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -41,9 +43,14 @@ export class HeaderComponent { // implements OnDestroy {
       this.profileUrl = 'helper/profile'
       this.isWorker = true;
       return;
+    } else if(rol === 'client') {
+      this.profileUrl = 'customer/profile';
+      this.isWorker = false;
+    } else {
+      this.isWorker = false;
+      this.isAdmin = true;
     }
-    this.profileUrl = 'customer/profile';
-    this.isWorker = false;
+
   }
 
   onLogout() {
