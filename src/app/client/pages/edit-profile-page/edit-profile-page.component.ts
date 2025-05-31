@@ -123,7 +123,7 @@ export class EditProfilePageComponent implements OnInit {
           this.sendClientData(url);
         },
         error: (err) => {
-          this.alertService.error('Error al subir la foto: ' + (err.message || 'Error desconocido'));
+          this.alertService.error('Error al subir la foto');
           this.isLoading = false;
         },
       });

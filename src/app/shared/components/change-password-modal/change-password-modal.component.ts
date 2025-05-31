@@ -57,6 +57,9 @@ export class ChangePasswordModalComponent implements OnInit {
       next: (response) => {
         if (response.data) {
           this.alertService.success('Contraseña cambiada con éxito');
+          console.log('Se cambió la contraseña');
+          this.passwordForm.reset();
+          this.loading = false;
           this.closeModal();
         } else {
           this.alertService.error('La contraseña actual es incorrecta');
@@ -64,8 +67,6 @@ export class ChangePasswordModalComponent implements OnInit {
       },
       error: (err) => {
         this.alertService.error('Error al cambiar la contraseña');
-      },
-      complete: () => {
         this.passwordForm.reset();
         this.loading = false;
       }
