@@ -51,7 +51,6 @@ export class SchedulePageComponent implements OnInit {
       ).subscribe({
         next: (weeklySchedule) => {
           this.weeklySchedule = weeklySchedule;
-          console.log(weeklySchedule);
           this.isLoading = false;
         },
         error: (err) => {
@@ -62,6 +61,7 @@ export class SchedulePageComponent implements OnInit {
   }
 
   isHourAvailable(dayIndex: number, hourNum: number): boolean {
+    if (!this.weeklySchedule || this.weeklySchedule.length == 0) return false;
     const daySchedule = this.weeklySchedule.find(schedule_day => schedule_day.dia === dayIndex);
     if (!daySchedule || !daySchedule.horas) return false;
 

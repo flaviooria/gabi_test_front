@@ -71,5 +71,8 @@ export class ValorarServicioModalComponent implements OnInit {
     if (modal) {
       modal.classList.add('hidden');
     }
+    setTimeout(() => {
+      location.reload();
+    }, 2000);
   }
 }

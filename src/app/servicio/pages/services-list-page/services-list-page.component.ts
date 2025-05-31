@@ -13,6 +13,7 @@ export class ServicesListPageComponent implements OnInit {
   public services: Service[] = [];
   public isLoading = true;
   public userRole?: string;
+  public title?: string;
 
   constructor(
     private servicioService: ServicioService,
@@ -25,6 +26,20 @@ export class ServicesListPageComponent implements OnInit {
     if (!this.userRole) {
       this.router.navigate(['/']);
       return;
+    }
+
+    switch (this.userRole) {
+      case 'admin':
+        this.title = 'Servicios vigentes';
+        break;
+      case 'worker':
+        this.title = 'Servicios Pendientes';
+        break;
+      case 'client':
+        this.title = 'Servicios Solicitados';
+        break;
+      default:
+        break;
     }
 
     this.servicioService.pendingServices().subscribe({

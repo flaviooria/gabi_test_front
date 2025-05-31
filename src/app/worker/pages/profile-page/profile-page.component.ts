@@ -49,7 +49,6 @@ export class ProfilePageComponent {
       })
     ).subscribe({
         next: (response) => {
-          console.log(response);
           this.worker = response.worker;
           this.comments = response.comments;
         },
@@ -62,7 +61,7 @@ export class ProfilePageComponent {
 
   getServiceNames(servicesId: string): string[] {
     try {
-      const ids = JSON.parse(servicesId) as number[];
+      const ids = servicesId.slice(1, -1).split(',').map(id => parseInt(id, 10)).filter(id => !isNaN(id));
       return ids
         .map(id => this.services.find(s => s.id === id)?.name || 'Desconocido')
         .filter(name => name !== 'Desconocido');

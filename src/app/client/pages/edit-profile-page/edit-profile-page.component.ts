@@ -50,8 +50,8 @@ export class EditProfilePageComponent implements OnInit {
       direccion: ['', [Validators.maxLength(255)]],
 
       // This is new
-      lat: [null, Validators.required],
-      lng: [null, Validators.required],
+      lat: [null],
+      lng: [null],
 
     });
   }
@@ -89,15 +89,22 @@ export class EditProfilePageComponent implements OnInit {
         this.profilePhotoUrl = client.user.profile_photo || null;
       });
   }
-
   
   onFileSelected(event: Event): void {
-    // This is new
-    if (!this.isBrowser) return;
-
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
+      const file = input.files[0];
+      const validTypes = ['image/jpeg', 'image/png'];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (!validTypes.includes(file.type)) {
+        this.alertService.error('Solo se permiten imágenes JPEG o PNG');
+        return;
+      }
+      if (file.size > maxSize) {
+        this.alertService.error('El archivo no puede exceder los 5MB');
+        return;
+      }
+      this.selectedFile = file;
     }
   }
 
@@ -107,6 +114,7 @@ export class EditProfilePageComponent implements OnInit {
       this.clientForm.markAllAsTouched();
       return;
     }
+    this.isLoading = true;
 
     if (this.selectedFile) {
       this.fileUploadService.uploadFile(this.selectedFile).subscribe({
@@ -116,6 +124,7 @@ export class EditProfilePageComponent implements OnInit {
         },
         error: (err) => {
           this.alertService.error('Error al subir la foto: ' + (err.message || 'Error desconocido'));
+          this.isLoading = false;
         },
       });
     } else {
@@ -141,12 +150,15 @@ export class EditProfilePageComponent implements OnInit {
 
     this.clientService.updateCliente(clientData).subscribe({
       next: (client) => {
-        console.log(client);
         this.alertService.success(`${client.user.nombre} actualizado!`);
-        this.router.navigate(['/customer/profile']);
+        setTimeout(() => {
+          location.reload();
+        }, 1500);
+        this.isLoading = false;
       },
       error: (err) => {
         this.alertService.error(err.error.message || 'Error desconocido');
+        this.isLoading = false;
       },
     });
   }

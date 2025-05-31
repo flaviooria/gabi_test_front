@@ -10,7 +10,6 @@ export class GeocodeService {
   constructor(private http: HttpClient) {}
 
   geocode(query: string): Observable<any> {
-    console.log('Aquí sí entra');
     return this.http.get<any>(`${environment.baseURL}/geocode?q=${encodeURIComponent(query)}`)
     .pipe(
       map((response) => response.data)

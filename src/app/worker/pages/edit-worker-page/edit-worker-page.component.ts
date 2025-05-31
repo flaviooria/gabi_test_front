@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { debounceTime, delay, switchMap } from 'rxjs';
+import { debounceTime, delay, map, switchMap } from 'rxjs';
 import { ServicesTypes } from '../../../servicio/interfaces/servicesTypes.interface';
 import { ServicioService } from '../../../servicio/services/servicio.service';
 import { WorkerService } from '../../services/worker.service';
@@ -31,8 +31,11 @@ export class EditWorkerPageComponent implements OnInit {
   public isLoading: boolean = true;
   public selectedFile: File | null = null;
   public profilePhotoUrl: string | null = null;
-  public isBrowser: boolean;
-
+  public isBrowser(): boolean {
+    return isPlatformBrowser(this.platformId);
+  }
+  @ViewChild('serviceInput') serviceInputRef!: ElementRef;
+@ViewChild('changePasswordModal') changePasswordModalRef!: ElementRef;
   constructor(
     private fb: FormBuilder,
     private servicioService: ServicioService,
@@ -43,8 +46,6 @@ export class EditWorkerPageComponent implements OnInit {
     private geocodeService: GeocodeService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    this.isBrowser = isPlatformBrowser(platformId);
-
     this.workerForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
@@ -54,8 +55,8 @@ export class EditWorkerPageComponent implements OnInit {
       services_id: this.fb.array([], Validators.required),
       bio: ['', Validators.required],
       active: [0, Validators.required],
-      lat: [null, Validators.required],
-      lng: [null, Validators.required],
+      lat: [null],
+      lng: [null],
     });
   }
 
@@ -66,18 +67,38 @@ export class EditWorkerPageComponent implements OnInit {
     this.newService.valueChanges
       .pipe(
         debounceTime(500),
-        switchMap((value) => {
-          if (!value) {
-            this.rellenarServicesSelect();
-            return [];
-          }
-          return this.servicioService.servicesTypes;
-        })
+        switchMap((value) =>
+          this.servicioService.servicesTypes.pipe(
+            map(services =>
+              value
+                ? services.filter((s) => s.name.toLowerCase().includes(value.toLowerCase()))
+                : services
+            )
+          )
+        )
       )
-      .subscribe((services) => {
-        this.existingServices =
-          services.filter((s) => s.name.toLowerCase().includes(this.newService.value.toLowerCase())) || [];
+      .subscribe({
+        next: (services) => {
+          this.existingServices = services;
+        },
+        error: (err) => {
+          console.error('Error al buscar servicios:', err);
+          this.existingServices = [];
+        }
       });
+  }
+
+  parsePostgresArray(services_id: string): number[] {
+    if (!services_id || services_id === '{}') return [];
+    if (!/^\{\d+(,\d+)*\}$/.test(services_id)) {
+      console.error('Formato de array de PostgreSQL inválido:', services_id);
+      return [];
+    }
+    return services_id
+      .slice(1, -1)
+      .split(',')
+      .map(id => parseInt(id.trim(), 10))
+      .filter(id => !isNaN(id));
   }
 
   loadWorkerData(): void {
@@ -86,10 +107,8 @@ export class EditWorkerPageComponent implements OnInit {
       this.router.navigate(['/helper']);
       return;
     }
-    this.workerService
-      .getWorkerById(userId)
-      .pipe(delay(800))
-      .subscribe((response) => {
+    this.workerService.getWorkerById(userId).subscribe({
+      next: (response) => {
         this.isLoading = false;
         if (!response.worker) {
           this.router.navigate(['/helper']);
@@ -110,15 +129,21 @@ export class EditWorkerPageComponent implements OnInit {
         });
         this.profilePhotoUrl = worker.user.profile_photo || null;
 
-        const services = JSON.parse(worker.services_id);
+        const services = this.parsePostgresArray(worker.services_id);
         services.forEach((serviceId: number) => {
           (this.workerForm.get('services_id') as FormArray).push(this.fb.control(serviceId));
         });
-      });
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.alertService.error('Error al cargar los datos del trabajador: ' + (err.error?.message || 'Error desconocido'));
+        this.router.navigate(['/helper']);
+      }
+    });
   }
 
   rellenarServicesSelect() {
-    this.servicioService.servicesTypes.pipe(delay(800)).subscribe((services) => {
+    this.servicioService.servicesTypes.subscribe((services) => {
       this.existingServices = services;
     });
   }
@@ -133,18 +158,14 @@ export class EditWorkerPageComponent implements OnInit {
   }
 
   toggleServiceInput(): void {
-    if (!this.isBrowser) return;
-
     this.showServiceInput = !this.showServiceInput;
     this.serviceSearchActive = this.showServiceInput;
-    if (this.showServiceInput) {
-      setTimeout(() => document.getElementById('serviceInput')?.focus(), 0);
+    if (this.showServiceInput && this.serviceInputRef) {
+      setTimeout(() => this.serviceInputRef.nativeElement.focus(), 0);
     }
   }
 
   onAddService(service?: ServicesTypes): void {
-    if (!this.isBrowser) return;
-
     if (!service && !this.newService.value) return;
 
     const serviceValue = service
@@ -165,8 +186,6 @@ export class EditWorkerPageComponent implements OnInit {
   }
 
   onRemoveService(index: number): void {
-    if (!this.isBrowser) return;
-
     this.services.removeAt(index);
   }
 

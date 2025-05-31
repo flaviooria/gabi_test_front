@@ -27,8 +27,7 @@ export class AuthService {
     );
   }
   changePassword(passwordData: any): Observable<any> {
-    const userId = localStorage.getItem('token');
-    console.log(passwordData);
+    const userId = localStorage.getItem('token');    
     return this.httpClient.post(`${this.baseUrl}/users/${userId}/change-password-authorization`, passwordData);
   }
 

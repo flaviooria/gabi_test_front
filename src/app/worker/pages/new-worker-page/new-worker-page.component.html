@@ -1,4 +1,8 @@
-<div class="flex items-center justify-center p-12">
+<ng-template #cargando>
+    <shared-loading></shared-loading>
+</ng-template>
+  
+<div *ngIf="!loading; else cargando" class="flex items-center justify-center p-12">
     <div class="mx-auto w-full max-w-[550px] bg-white card">
         <h2 class="mb-3 block font-bold text-2xl text-[#07074D]">
             Nuevo trabajador
@@ -17,7 +21,7 @@
                 <label for="email" class="mb-3 block text-base font-medium text-[#07074D]">
                     Correo Electrónico
                 </label>
-                <input type="email" id="email" formControlName="email" placeholder="Ingresa tu correo"
+                <input type="email" id="email" formControlName="email" placeholder="Ingresa la correo"
                     class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
                 <span *ngIf="isValidField('email')" class="text-red-600 text-sm">{{ getFieldError('email') }}</span>
             </div>
@@ -26,7 +30,7 @@
                 <label for="telefono" class="mb-3 block text-base font-medium text-[#07074D]">
                     Teléfono
                 </label>
-                <input type="text" id="telefono" formControlName="telefono" placeholder="Ingresa tu teléfono"
+                <input type="text" id="telefono" formControlName="telefono" placeholder="Ingresa la teléfono"
                     class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
                 <span *ngIf="isValidField('telefono')" class="text-red-600 text-sm">{{ getFieldError('telefono') }}</span>
             </div>
@@ -36,7 +40,7 @@
                     Dirección
                 </label>
                 <div class="flex items-center space-x-2">
-                    <input type="text" id="direccion" formControlName="direccion" placeholder="Ingresa tu dirección"
+                    <input type="text" id="direccion" formControlName="direccion" placeholder="Ingresa la dirección"
                         class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
                     <button type="button" (click)="openChooseLocationModal()"
                         class="button my-bg-teal text-white rounded-md py-3 px-6 text-base font-semibold outline-none">
@@ -54,7 +58,7 @@
                 <label for="password" class="mb-3 block text-base font-medium text-[#07074D]">
                     Contraseña
                 </label>
-                <input type="password" id="password" formControlName="password" placeholder="Ingresa tu contraseña"
+                <input type="password" id="password" formControlName="password" placeholder="Ingresa la contraseña"
                     class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
                 <span *ngIf="isValidField('password')" class="text-red-600 text-sm">{{ getFieldError('password') }}</span>
             </div>
@@ -102,41 +106,11 @@
                 <label for="bio" class="mb-3 block text-base font-medium text-[#07074D]">
                     Biografía
                 </label>
-                <textarea id="bio" formControlName="bio" placeholder="Describe tu experiencia"
-                    class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"></textarea>
+                <textarea id="bio" formControlName="bio" placeholder="Describe la experiencia"
+                    class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+                    ></textarea>
                 <span *ngIf="isValidField('bio')" class="text-red-600 text-sm">{{ getFieldError('bio') }}</span>
             </div>
-
-            <details class="py-4 px-6 mb-5 text-base rounded-md border border-gray-500" open>
-                <summary class="mb-3 block font-medium text-[#07074D]">
-                    Horario Semanal <i class="ml-3 fa-solid fa-calendar"></i>
-                </summary>
-                <div class="grid grid-cols-3 gap-4">
-                    <div *ngFor="let day of daysOfWeek; let i = index" class="flex flex-col justify-center items-center">
-                        <span class="text-sm font-medium text-[#07074D] mb-2">{{ day.name }}</span>
-                        <div class="flex flex-col items-start w-full">
-                            <label class="text-xs font-medium text-[#6B7280] mb-1">Mañanas</label>
-                            <div class="flex items-center gap-2">
-                                <input type="time" [formControl]="getFormControl(i, 'morningStart')"
-                                    class="w-20 rounded-md border border-[#e0e0e0] py-1 px-2 text-sm outline-none focus:border-[#6A64F1]" />
-                                <span>-</span>
-                                <input type="time" [formControl]="getFormControl(i, 'morningEnd')"
-                                    class="w-20 rounded-md border border-[#e0e0e0] py-1 px-2 text-sm outline-none focus:border-[#6A64F1]" />
-                            </div>
-                        </div>
-                        <div class="flex flex-col items-start w-full mt-2">
-                            <label class="text-xs font-medium text-[#6B7280] mb-1">Tardes</label>
-                            <div class="flex items-center gap-2">
-                                <input type="time" [formControl]="getFormControl(i, 'afternoonStart')"
-                                    class="w-20 rounded-md border border-[#e0e0e0] py-1 px-2 text-sm outline-none focus:border-[#6A64F1]" />
-                                <span>-</span>
-                                <input type="time" [formControl]="getFormControl(i, 'afternoonEnd')"
-                                    class="w-20 rounded-md border border-[#e0e0e0] py-1 px-2 text-sm outline-none focus:border-[#6A64F1]" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </details>
 
             <div class="mb-5">
                 <label class="flex items-center">

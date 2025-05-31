@@ -5,7 +5,7 @@
 <div *ngIf="!isLoading; else cargando" class="bg-gray-100 min-h-screen py-8">
   <div class="container mx-auto px-4">
     <h1 class="text-2xl font-quicksand text-teal-700 mb-3">
-      {{ userRole === 'worker' ? 'Servicios Pendientes' : 'Servicios Solicitados' }}
+      {{ title }}
     </h1>
     <div class="bg-white rounded-lg shadow p-6">
       <div *ngIf="services.length === 0" class="text-center text-gray-500">

@@ -46,7 +46,6 @@ export class WorkerService {
   }
 
   updateWorkerProfile(workerData: WorkerTemplate): Observable<Worker> {
-    console.log(workerData);
     const userId = localStorage.getItem('token');
     return this.httpClient.put<any>(`${this.baseURL}/workers/${userId}/profile`, workerData)
       .pipe(

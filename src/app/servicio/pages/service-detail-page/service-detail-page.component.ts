@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { delay, switchMap } from 'rxjs';
+import { delay, interval, Subscription, switchMap, takeWhile } from 'rxjs';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ServicioService } from '../../../servicio/services/servicio.service';
 import { Service } from '../../../servicio/interfaces/service.interface';
@@ -17,6 +17,7 @@ export class ServiceDetailPageComponent implements OnInit {
   public isLoading = true;
   public userRole!:string;
   public currentTime: Date = new Date();
+  private pollingSubscription?: Subscription;
 
   constructor(
     private servicioService: ServicioService,
@@ -41,6 +42,8 @@ export class ServiceDetailPageComponent implements OnInit {
       )
       .subscribe((service) => {
         this.isLoading = false;
+
+        console.log(service);
         
         if (!service) {
           this.router.navigate(['/']);
@@ -54,20 +57,38 @@ export class ServiceDetailPageComponent implements OnInit {
           return;
         }
 
-        const isClient = service.client?.user?.id === currentUser.id;
-        const isWorker = service.worker?.user?.id === currentUser.id;
+        const isClient = service!.client?.user?.id === currentUser.id;
+        const isWorker = service!.worker?.user?.id === currentUser.id;
+        const isAdmin = this.authService.currentUser?.rol === 'admin';
 
-        if (!isClient && !isWorker) {
+        if (!isClient && !isWorker && !isAdmin) {
           this.router.navigate(['/']);
           return;
         }
 
-        this.service = service;
+        this.service = service!;
+        this.startServicePolling(service.id);
       });
+  }
 
-    setInterval(() => {
-      this.currentTime = new Date();
-    }, 2000);  
+  ngOnDestroy(): void {
+    this.pollingSubscription?.unsubscribe();
+  }
+
+  startServicePolling(serviceId: string): void {
+    this.pollingSubscription = interval(5000)
+      .pipe(
+        switchMap(() => this.servicioService.getService(serviceId)),
+        takeWhile(
+          () => !this.service || !['completed', 'cancelled'].includes(this.service.status),
+          true
+        )
+      )
+      .subscribe((updatedService) => {
+        if (updatedService) {
+          this.service = updatedService; // Actualiza el servicio sin recargar
+        }
+      });
   }
 
   goBack(): void {
@@ -75,6 +96,8 @@ export class ServiceDetailPageComponent implements OnInit {
   }
 
   changeServiceStatus(status: string): void {
+    this.isLoading = true;
+
     if (this.service) {
       this.servicioService.updateServiceStatus(this.service.id, status).subscribe({
         next: (updatedService) => {
@@ -84,6 +107,7 @@ export class ServiceDetailPageComponent implements OnInit {
         error: (err) => {
           console.error('Error al cambiar el estado del servicio:', err);
           this.alertService.error('Error al actualizar el estado del servicio');
+          this.isLoading = false;
         }
       });
     }
@@ -93,14 +117,14 @@ export class ServiceDetailPageComponent implements OnInit {
     this.changeServiceStatus('accepted');
     setTimeout(() => {
       location.reload();
-    }, 1000);
+    }, 2000);
   }
 
   rejectService(): void {
     this.changeServiceStatus('cancelled');
     setTimeout(() => {
       location.reload();
-    }, 1000);
+    }, 2000);
   }
 
   cancelService(): void {
@@ -155,6 +179,9 @@ export class ServiceDetailPageComponent implements OnInit {
       this.servicioService.confirmCashPayment(this.service.id, this.userRole).subscribe({
         next: () => {
           this.alertService.success('Pago en efectivo confirmado');
+          setTimeout(() => {
+            location.reload();
+          }, 2000);
         },
         error: (err) => {
           this.alertService.error('Error al confirmar el pago');

@@ -76,33 +76,35 @@ export class ScheduleEditPageComponent implements OnInit {
       afternoonEnd: ''
     }));
 
-    availability.forEach((availability: Availability) => {
-      const dia = availability.dia;
-      const horas = availability.horas;
+    if(availability) {
+      availability.forEach((availability: Availability) => {
+        const dia = availability.dia;
+        const horas = availability.horas;
 
-      if (horas) {
-        if (horas[0]) {
-          const [start, end] = horas[0].split('-');
-          weeklySchedule[dia].morningStart = start || '';
-          weeklySchedule[dia].morningEnd = end || '';
+        if (horas) {
+          if (horas[0]) {
+            const [start, end] = horas[0].split('-');
+            weeklySchedule[dia].morningStart = start || '';
+            weeklySchedule[dia].morningEnd = end || '';
+          }
+          if (horas[1]) {  
+            const [start, end] = horas[1].split('-');
+            weeklySchedule[dia].afternoonStart = start || '';
+            weeklySchedule[dia].afternoonEnd = end || '';
+          }
         }
-        if (horas[1]) {  
-          const [start, end] = horas[1].split('-');
-          weeklySchedule[dia].afternoonStart = start || '';
-          weeklySchedule[dia].afternoonEnd = end || '';
-        }
-      }
 
-    });
+      });
 
-    this.scheduleForm.setControl('weeklyAvailability', this.fb.array(
-      weeklySchedule.map(dia => this.fb.group({
-        morningStart: [dia.morningStart],
-        morningEnd: [dia.morningEnd],
-        afternoonStart: [dia.afternoonStart],
-        afternoonEnd: [dia.afternoonEnd]
-      }))
-    ));
+      this.scheduleForm.setControl('weeklyAvailability', this.fb.array(
+        weeklySchedule.map(dia => this.fb.group({
+          morningStart: [dia.morningStart],
+          morningEnd: [dia.morningEnd],
+          afternoonStart: [dia.afternoonStart],
+          afternoonEnd: [dia.afternoonEnd]
+        }))
+      ));
+    }
   }
 
   onSubmit(): void {
@@ -113,7 +115,7 @@ export class ScheduleEditPageComponent implements OnInit {
     this.isLoading = true;
 
     const weeklyAvailability = this.weeklyAvailability.value.map((dia: any, index: number) => ({
-      day: index, // Cambiado de dia a day para coincidir con el backend
+      dia: index,
       horas: [
         dia.morningStart && dia.morningEnd ? `${dia.morningStart}-${dia.morningEnd}` : null,
         dia.afternoonStart && dia.afternoonEnd ? `${dia.afternoonStart}-${dia.afternoonEnd}` : null

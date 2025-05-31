@@ -25,6 +25,8 @@ export class ServiceRequestPageComponent implements OnInit {
   public direccionDefault?:string;
   public today: string;
   public oneMonthFromToday: string;
+  public cardAvailable: boolean = false;
+  public isLoading: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -84,13 +86,22 @@ export class ServiceRequestPageComponent implements OnInit {
       start_time: ['', Validators.required],
       end_time: ['', Validators.required],
       client_location: [this.direccionDefault, [Validators.required, Validators.minLength(5)]],
-      payment_method: ['card', Validators.required]
+      payment_method: [null, Validators.required]
     }, { validators: [timeValidator, dateValidator] });
   }
 
   ngOnInit(): void {
     setTimeout(() => {
       this.direccionDefault = this.authService.currentUser!.direccion!;
+      this.clientService.getClienteById(localStorage.getItem('token')!)
+      .subscribe((clientResponse) => {
+        const client = clientResponse.client;
+        this.cardAvailable = !!client.stripe_customer_id;
+        this.serviceForm.patchValue({
+          client_location: this.direccionDefault,
+          payment_method: this.cardAvailable ? 'card' : 'cash' // Establece dinámicamente
+        });
+      });
       this.serviceForm.patchValue({
         client_location: this.direccionDefault,
       });
@@ -249,6 +260,7 @@ export class ServiceRequestPageComponent implements OnInit {
       this.serviceForm.markAllAsTouched();
       return;
     }
+    this.isLoading = true;
 
     console.log(this.currentService);
 
@@ -260,6 +272,7 @@ export class ServiceRequestPageComponent implements OnInit {
       },
       error: (err) => {
         this.alertService.error(err.error.message);
+        this.isLoading = false;
       }
     });
   }

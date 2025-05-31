@@ -22,22 +22,22 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit() {
     this.userRole = this.authService.decrypt(localStorage.getItem('r')!);
-    this.sidebarItems = [
-      { label: 'Cerrar Sesión', icon: 'fa-sign-out-alt', url: './logout' }
-    ]
+    this.sidebarItems = [];
+
     if (this.userRole == 'client') {
-      this.sidebarItems.splice(0, 0, { label: 'Solicitar Servicio', icon: 'fa-plus-square', url: './services/request' });
+      this.sidebarItems.push({ label: 'Solicitar Servicio', icon: 'fa-plus-square', url: './services/request' });
     }
     if (this.userRole != 'admin') {
-      this.sidebarItems.splice(0, 0, { label: 'Servicios ' + (this.userRole == 'worker' ? 'Asignados' : 'Solicitados'), icon: 'fa-receipt', url: './services/list' });
-      this.sidebarItems.splice(0, 0, { label: 'Historial de servicios', icon: 'fa-history', url: './services/history' });
+      this.sidebarItems.push({ label: 'Servicios ' + (this.userRole == 'worker' ? 'Asignados' : 'Solicitados'), icon: 'fa-receipt', url: './services/list' });
+      this.sidebarItems.push({ label: 'Historial de servicios', icon: 'fa-history', url: './services/history' });
     }
     if (this.userRole == 'admin') {
-      this.sidebarItems.splice(0, 0, { label: 'Añadir trabajador', icon: 'fa-user-plus', url: './helper/new-helper' });
-      this.sidebarItems.splice(0, 0, { label: 'Ver Trabajadores', icon: 'fa-users', url: './helper/list' });
+      this.sidebarItems.push({ label: 'Ver Trabajadores', icon: 'fa-users', url: './helper/list' });
+      this.sidebarItems.push({ label: 'Añadir trabajador', icon: 'fa-user-plus', url: './helper/new-helper' });
+      this.sidebarItems.push({ label: 'Servicios Vigentes', icon: 'fa-receipt', url: './services/list' });
+      this.sidebarItems.push({ label: 'Servicios Pasados', icon: 'fa-receipt', url: './services/history' });
     }
 
   }
 }
-//TODO: hacer un get para recoger los servicios que ya estén terminados o no esten vigentes (historial)
 //TODO: Una tabla de notificaciones

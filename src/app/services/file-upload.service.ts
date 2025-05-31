@@ -17,8 +17,6 @@ export class FileUploadService {
     const formData = new FormData();
     formData.append('profile_photo', file);
  
-    console.log('Aquí llega: ', formData);
-
     // Envía la solicitud al endpoint de tu backend
     return this.http
       .post(`${this.baseURL}/upload-profile-photo`, formData, { responseType: 'text' })

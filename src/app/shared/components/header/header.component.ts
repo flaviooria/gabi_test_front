@@ -6,6 +6,7 @@ import { delay } from 'rxjs';
 import { User } from '../../../auth/interfaces/user.interface';
 import { Router } from '@angular/router';
 import { fail } from 'assert';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'shared-header',
@@ -53,8 +54,34 @@ export class HeaderComponent { // implements OnDestroy {
 
   }
 
-  onLogout() {
-    this.authService.logout();
-    this.router.navigate(['/auth/login'])
+  onLogout(): void {
+    Swal.fire({
+      title: `Cerrar sesión`,
+      text: `¿Estás seguro de que quieres cerrar sesión?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#6A64F1',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, ¡Adios!',
+      cancelButtonText: 'No, cancelar',
+      buttonsStyling: true,
+      customClass: {
+        confirmButton: 'swal2-confirm btn my-bg-teal text-white font-semibold py-2 px-4 rounded-md',
+        cancelButton: 'swal2-cancel btn bg-red-500 text-white font-semibold py-2 px-4 rounded-md'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.authService.logout();
+        this.router.navigate(['/auth/login']);
+      }
+    });
   }
+
+  openChangePasswordModal(): void {
+    const modal = document.getElementById('changePasswordModal');
+    if (modal) {
+      modal.classList.remove('hidden');
+    }
+  }
+
 }

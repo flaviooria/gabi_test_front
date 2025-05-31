@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ClientService } from '../../services/client.service';
 import { loadStripe, Stripe, StripeCardElement } from '@stripe/stripe-js';
 import { environment } from '../../../environments/environment.prod';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'client-payment-method',
@@ -43,18 +44,47 @@ export class PaymentMethodComponent implements OnInit {
   }
 
   deletePaymentMethod() {
-    const token = localStorage.getItem('token');
-    if (token) {
-      this.clientService.deletePaymentMethod(token).subscribe({
-        next: (response) => {
-          console.log('Método de pago eliminado:', response);
-          this.paymentMethods = []; // Limpiar la lista localmente
-        },
-        error: (err) => {
-          console.error('Error al eliminar método de pago:', err);
+    Swal.fire({
+      title: '¿Eliminar método de pago?',
+      text: '¿Estás seguro de que quieres eliminar este método de pago?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#6A64F1',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, ¡eliminar!',
+      cancelButtonText: 'No, mantener',
+      buttonsStyling: true,
+      customClass: {
+        confirmButton: 'swal2-confirm btn my-bg-teal text-white font-semibold py-2 px-4 rounded-md',
+        cancelButton: 'swal2-cancel btn bg-red-500 text-white font-semibold py-2 px-4 rounded-md'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const token = localStorage.getItem('token');
+        if (token) {
+          this.clientService.deletePaymentMethod(token).subscribe({
+            next: (response) => {
+              console.log('Método de pago eliminado:', response);
+              Swal.fire({
+              title: '¡Cancelado!',
+              text: 'El servicio ha sido cancelado correctamente',
+              icon: 'success',
+              confirmButtonColor: '#6A64F1',
+              customClass: {
+                confirmButton: 'swal2-confirm btn my-bg-teal text-white font-semibold py-2 px-4 rounded-md'
+              }
+            });
+            setTimeout(() => {
+              location.reload();
+            }, 1000);
+            },
+            error: (err) => {
+              console.error('Error al eliminar método de pago:', err);
+            }
+          });
         }
-      });
-    }
+      }
+    });
   }
 
 }

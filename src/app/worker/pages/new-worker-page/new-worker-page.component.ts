@@ -260,6 +260,7 @@ export class NewWorkerPageComponent implements OnInit {
   public showServiceInput: boolean = false;
   public serviceSearchActive: boolean = false;
   public isBrowser: boolean;
+  public loading: boolean = false;
 
   public daysOfWeek = [
     { name: 'Lunes', index: 0 },
@@ -292,18 +293,10 @@ export class NewWorkerPageComponent implements OnInit {
       ],
       dni: ['', [Validators.required, Validators.pattern(/^\d{8}[A-Z]$/)]],
       services_id: this.fb.array([], Validators.required),
-      bio: ['', Validators.required],
-      weeklyAvailability: this.fb.array(
-        this.daysOfWeek.map(() => this.fb.group({
-          morningStart: [''],
-          morningEnd: [''],
-          afternoonStart: [''],
-          afternoonEnd: ['']
-        }))
-      ),
+      bio: ['Trabajador nuevo', Validators.required],
       active: [true, Validators.required],
-      lat: [null, Validators.required],
-      lng: [null, Validators.required],
+      lat: [null],
+      lng: [null],
     });
   }
 
@@ -414,7 +407,6 @@ export class NewWorkerPageComponent implements OnInit {
       password: this.workerForm.value.password ?? '',
       dni: this.workerForm.value.dni ?? '',
       services_id: this.workerForm.value.services_id ?? [],
-      horario_semanal: this.workerForm.value.weeklyAvailability,
       bio: this.workerForm.value.bio || null,
       active: this.workerForm.value.active ?? false,
       lat: this.workerForm.value.lat ?? null,
@@ -428,29 +420,23 @@ export class NewWorkerPageComponent implements OnInit {
       this.workerForm.markAllAsTouched();
       return;
     }
+    this.loading = true;
 
     this.workerService.createWorker(this.currentWorker)
       .subscribe({
         next: (worker) => {
           if (worker.id) {
             this.alertService.success(`${worker.user.nombre} creado!`);
-            this.router.navigate(['/helpers']);
+            this.router.navigate(['/helper']);
             this.workerForm.reset();
             (this.workerForm.controls['services_id'] as FormArray) = this.fb.array([]);
-            (this.workerForm.controls['weeklyAvailability'] as FormArray) = this.fb.array(
-              this.daysOfWeek.map(() => this.fb.group({
-                morningStart: [''],
-                morningEnd: [''],
-                afternoonStart: [''],
-                afternoonEnd: ['']
-              }))
-            );
           } else {
             this.alertService.error('Error al crear trabajador');
           }
         },
         error: (err) => {
           this.alertService.error('Error al crear trabajador');
+          this.loading = false;
         }
       });
   }

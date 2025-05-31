@@ -6,8 +6,8 @@ import { environment } from '../../environments/environment.prod';
   standalone: false
 })
 export class UserPfpPipe implements PipeTransform {
-  transform(imagen: string | null): string {
-    if (!imagen) {
+  transform(imagen: string | null | undefined): string {
+    if (!imagen || imagen == undefined) {
       return 'no_image.png';
     }
     return `${environment.baseURL}/proxy-image/${imagen}`;

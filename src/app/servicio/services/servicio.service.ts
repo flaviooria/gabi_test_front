@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.prod';
 import { HttpClient } from '@angular/common/http';
 import { ServicesTypes } from '../interfaces/servicesTypes.interface';
-import { map, Observable, tap } from 'rxjs';
+import { catchError, map, Observable, of, tap } from 'rxjs';
 import { Service } from '../interfaces/service.interface';
 import { ServiceTemplate } from '../interfaces/service-template';
 import { response } from 'express';
@@ -49,10 +49,11 @@ export class ServicioService {
       );
   }
 
-  getService(servicioId: string): Observable<Service> {
+  getService(servicioId: string): Observable<Service | null > {
     return this.httpClient.get<any>(`${this.baseURL}/services/${servicioId}`)
     .pipe(
-      map(response => response.data)
+      map(response => response.data),
+      catchError((error) => of(null))
     );
   }
 

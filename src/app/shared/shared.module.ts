@@ -11,6 +11,7 @@ import { AlertComponent } from './components/alert/alert.component';
 import { ChangePasswordModalComponent } from './components/change-password-modal/change-password-modal.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ChooseLocationComponent } from './components/choose-location/choose-location.component';
+import { UserPfpPipe } from './pipes/user-pfp.pipe';
 
 
 @NgModule({
@@ -23,6 +24,7 @@ import { ChooseLocationComponent } from './components/choose-location/choose-loc
     AlertComponent,
     ChangePasswordModalComponent,
     ChooseLocationComponent,
+    UserPfpPipe
   ],
   imports: [
     CommonModule,

@@ -12,6 +12,7 @@ import { AlertService } from '../../services/alert.service';
 export class ChangePasswordModalComponent implements OnInit {
   @Input() userId!: string;
   public passwordForm: FormGroup;
+  public loading: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -42,12 +43,15 @@ export class ChangePasswordModalComponent implements OnInit {
       this.passwordForm.markAllAsTouched();
       return;
     }
+    this.loading = true;
 
     const passwordData = {
       current_password: this.passwordForm.value.current_password,
       new_password: this.passwordForm.value.new_password,
       new_password_confirmation: this.passwordForm.value.new_password_confirmation
     };
+
+    // console.log(passwordData);
 
     this.authService.changePassword(passwordData).subscribe({
       next: (response) => {
@@ -63,6 +67,7 @@ export class ChangePasswordModalComponent implements OnInit {
       },
       complete: () => {
         this.passwordForm.reset();
+        this.loading = false;
       }
     });
   }

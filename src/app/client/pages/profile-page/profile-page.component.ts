@@ -50,7 +50,7 @@ export class ProfilePageComponent implements OnInit {
       });
   }
 
-  goAway(): void {
+  leave(): void {
     this.router.navigateByUrl('/');
   }
 }

@@ -129,20 +129,16 @@
 
           <!-- Estado: in_progress -->
           <ng-container *ngSwitchCase="'in_progress'">
-            <button *ngIf="service.payment_status === 'emitido' && canCompleteServiceOrConfirmPayment()"
-            class="button my-bg-teal text-white"
-            (click)="confirmCashPayment()" >
-              Confirmar pago
+            <button *ngIf="service.payment_method === 'cash' && service.payment_status === 'emitido' && canCompleteServiceOrConfirmPayment()"
+              class="button my-bg-teal text-white" (click)="confirmCashPayment()">
+              Confirmar Pago
             </button>
-            <!-- Estado: paid -->
             <button *ngIf="service.payment_status === 'pagado' && canCompleteServiceOrConfirmPayment()"
-            class="button my-bg-teal text-white"
-            (click)="completeService()">
+              class="button my-bg-teal text-white" (click)="completeService()">
               Completar Servicio
             </button>
             <button *ngIf="service.payment_status === 'pendiente'"
-            class="button my-bg-teal text-white"
-            (click)="cancelService()">
+              class="button my-bg-teal text-white" (click)="cancelService()">
               Cancelar
             </button>
           </ng-container>
@@ -178,9 +174,8 @@
             <button class="button my-bg-teal text-white" (click)="cancelService()">
               Cancelar
             </button>
-            <button *ngIf="service.payment_method == 'cash' && service.payment_status === 'pendiente' && canCompleteServiceOrConfirmPayment()"
-            class="button my-bg-teal text-white"
-            (click)="confirmCashPayment()">
+            <button *ngIf="service.payment_method === 'cash' && service.payment_status === 'pendiente' && canCompleteServiceOrConfirmPayment()"
+              class="button my-bg-teal text-white" (click)="confirmCashPayment()">
               Emitir Pago
             </button>
           </ng-container>

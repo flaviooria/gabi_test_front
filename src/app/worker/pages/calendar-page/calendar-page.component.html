@@ -29,33 +29,34 @@
                     </button>
                 </div>
             </div>
-            <table class="w-full">
+            <table class="w-full table-fixed">
                 <!-- Días de la semana -->
                 <thead>
                     <tr>
-                        <th
-                        *ngFor="let day of weekDays"
-                        class="p-2 border-r h-10 xl:w-40 lg:w-30 md:w-30 sm:w-20 w-10 xl:text-sm text-xs">
-                            <span class="xl:block lg:block md:block sm:block hidden">{{ day.completo }}</span>
-                            <span class="xl:hidden lg:hidden md:hidden sm:hidden block">{{ day.short }}</span>
-                        </th>
+                    <th *ngFor="let day of weekDays"
+                        class="p-2 border-r h-10 xl:w-40 lg:w-32 md:w-28 sm:w-20 w-10 xl:text-sm text-xs">
+                        <span class="lg:block md:block sm:block hidden">{{ day.completo }}</span>
+                        <span class="lg:hidden md:hidden sm:hidden block">{{ day.short }}</span>
+                    </th>
                     </tr>
                 </thead>
 
                 <!-- Días del mes -->
                 <tbody>
                     <tr *ngFor="let week of currentMonth?.weeks" class="text-center h-20">
-                        <td *ngFor="let day of week" class="border p-1 h-40 xl:w-40 lg:w-30 md:w-30 sm:w-20 w-10 overflow-auto transition cursor-pointer duration-500 ease hover:bg-gray-300" [ngClass]="{'bg-gray-100': !day.isCurrentMonth}">
-                            <div class="flex flex-col mx-auto h-40 w-32 overflow-hidden">
+                        <td *ngFor="let day of week"
+                            class="border p-1 h-40 xl:w-40 lg:w-32 md:w-28 sm:w-20 w-10 overflow-auto transition cursor-pointer duration-500 ease hover:bg-gray-300"
+                            [ngClass]="{'bg-gray-100': !day.isCurrentMonth}">
+                            <div class="flex flex-col mx-auto h-40 w-full overflow-hidden">
                                 <div class="top h-5 w-full">
                                     <span class="text-gray-500" *ngIf="day.day">{{ day.day }}</span>
                                 </div>
                                 <div class="bottom flex-grow h-30 py-1 w-full cursor-pointer">
                                     <div *ngFor="let service of day.services" class="event bg-blue-400 text-white rounded p-1 text-sm mb-1">
-                                        <button type="button" (click)="goToServiceDetail(service.id)">
-                                            <span class="event-name">{{ getServiceTypeName(service.service_type_id) }}</span>
-                                            <span class="time">{{ service.start_time | dateFormat: 'toTime' }}-{{ service.end_time | dateFormat: 'toTime' }}</span>
-                                        </button>
+                                    <button type="button" (click)="goToServiceDetail(service.id)">
+                                        <span class="event-name">{{ getServiceTypeName(service.service_type_id) }}</span>
+                                        <span class="time">{{ service.start_time | dateFormat: 'toTime' }}-{{ service.end_time | dateFormat: 'toTime' }}</span>
+                                    </button>
                                     </div>
                                 </div>
                             </div>

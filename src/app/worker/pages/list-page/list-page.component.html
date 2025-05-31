@@ -2,7 +2,7 @@
   <shared-loading></shared-loading>
 </ng-template>
 
-<div *ngIf="workers.length > 0; else cargando" class="p-12 bg-white">
+<div *ngIf="!loading; else cargando" class="p-12 bg-white">
   <div class="relative overflow-x-auto shadow-md rounded-md border border-[#e0e0e0]">
     <div class="flex items-center justify-between flex-wrap p-4 bg-white">
       <div class="relative">
@@ -55,6 +55,11 @@
         </tr>
       </thead>
       <tbody>
+        <tr *ngIf="workers.length == 0">
+          <th rowspan="5" class="p-8" >
+            Aún no tienes trabajadores
+          </th>
+        </tr>
         <tr *ngFor="let worker of filteredWorkers; let i = index"
           class="bg-white border-b border-[#e0e0e0] hover:bg-gray-50">
           <th scope="row" class="flex items-center px-6 py-4 text-[#07074D] whitespace-nowrap">

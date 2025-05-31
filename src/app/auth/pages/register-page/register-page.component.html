@@ -55,9 +55,9 @@
 
       <!-- Right Section -->
       <div class="p-8 md:p-12 md:w-1/2 w-full flex items-center justify-center bg-gray-100">
-        <div class="w-full bg-white rounded-lg shadow-xl p-8">
+        <div *ngIf="!isLoading; else cargando" class="w-full bg-white rounded-lg shadow-xl p-8">
           <div class="text-right mb-4">
-            <span class="text-gray-500">¿Ya tienes una cuenta?</span>
+          <span class="text-gray-500">¿Ya tienes una cuenta?</span>
             <a href="/auth/login" class="my-yellow dark:text-yellow-400 font-medium">Inicia sesión aquí</a>
           </div>
       
@@ -123,6 +123,10 @@
             </button>
           </form>
         </div>
+
+        <ng-template #cargando>
+          <shared-loading></shared-loading>
+        </ng-template>
       </div>
   </div>
 </section>

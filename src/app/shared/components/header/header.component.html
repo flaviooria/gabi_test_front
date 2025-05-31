@@ -11,19 +11,19 @@
   </div>
 
 
-  <button id="dropdownInformationButton" data-dropdown-toggle="dropdownInformation" class="text-white focus:ring-4 focus:outline-none focus:ring-teal-500 font-bold rounded-full text-sm px-2 py-2 text-center flex items-center" type="button">
-    <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-      <path d="M10.5 21H4C4 17.4735 6.60771 14.5561 10 14.0709M16.4976 16.2119C15.7978 15.4328 14.6309 15.2232 13.7541 15.9367C12.8774 16.6501 12.7539 17.843 13.4425 18.6868C13.8312 19.1632 14.7548 19.9983 15.4854 20.6353C15.8319 20.9374 16.0051 21.0885 16.2147 21.1503C16.3934 21.203 16.6018 21.203 16.7805 21.1503C16.9901 21.0885 17.1633 20.9374 17.5098 20.6353C18.2404 19.9983 19.164 19.1632 19.5527 18.6868C20.2413 17.843 20.1329 16.6426 19.2411 15.9367C18.3492 15.2307 17.1974 15.4328 16.4976 16.2119ZM15 7C15 9.20914 13.2091 11 11 11C8.79086 11 7 9.20914 7 7C7 4.79086 8.79086 3 11 3C13.2091 3 15 4.79086 15 7Z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
+  <button id="dropdownInformationButton" data-dropdown-toggle="dropdownInformation" class="text-white focus:ring-4 focus:outline-none focus:ring-teal-500 font-bold rounded-full text-sm p-2 m-1 text-center flex items-center" type="button">
+    <div class="rounded-full shadow-xl h-12 w-12 overflow-hidden" >
+      <img [src]="user?.profile_photo | user_pfp" alt="Foto de perfil" class="object-center" />
+    </div>
   </button>
     
   <!-- Dropdown menu -->
-  <div id="dropdownInformation" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700 dark:divide-gray-600">
-    <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+  <div id="dropdownInformation" class="flex flex-col items-center justify-center z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-46 dark:bg-gray-700 dark:divide-gray-600">
+    <div class="p-4 text-sm text-gray-900 dark:text-white">
       <div>{{ user?.nombre }}</div>
       <div class="font-medium truncate">{{ user?.email }}</div>
     </div>
-    <ul *ngIf="!isAdmin" class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownInformationButton">
+    <ul *ngIf="!isAdmin" class="w-full py-2 text-center text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownInformationButton">
       <li>
         <a href="{{ profileUrl }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Perfil</a>
       </li>
@@ -37,9 +37,11 @@
         <a href="customer/payment-method" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Mi tarjeta</a>
       </li>
     </ul>
-    <div class="py-2">
-      <button type="button" (click)="onLogout()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</button>
+    <button *ngIf="isAdmin" type="button" (click)="openChangePasswordModal()" class="my-bg-teal text-white rounded-md py-3 px-2 mx-auto font-light text-sm outline-none">Cambiar Contraseña</button>
+    <div class="py-2 w-full text-center">
+      <button type="button" (click)="onLogout()" class="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</button>
     </div>
   </div>
 
 </header>
+<change-password-modal *ngIf="user?.id" [userId]="user!.id"></change-password-modal>

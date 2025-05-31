@@ -29,6 +29,7 @@ export class ListPageComponent implements OnInit {
   public filteredServices: ServicesTypes[] = [];
   public existingServices: ServicesTypes[] = [];
   public selectedServiceId: string = '';
+  public loading: boolean = false;
 
   constructor(
     private workerService: WorkerService,
@@ -36,6 +37,7 @@ export class ListPageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loading = true;
     // Cargar servicios
     this.servicioService.servicesTypes.subscribe(services => {
       this.services = services;
@@ -47,6 +49,7 @@ export class ListPageComponent implements OnInit {
     this.workerService.getWorkers().subscribe(workers => {
       this.workers = workers;
       this.filteredWorkers = workers;
+      this.loading = false;
     });
 
     // Búsqueda por nombre o email
@@ -62,6 +65,8 @@ export class ListPageComponent implements OnInit {
         : this.existingServices;
       this.showServiceDropdown = !!term || this.isServiceInputFocused;
     });
+
+    
   }
 
   applyFilters(): void {
@@ -117,7 +122,7 @@ export class ListPageComponent implements OnInit {
 
   getServiceNames(services_id: string): string {
     try {
-      const ids = JSON.parse(services_id) as number[];
+      const ids = services_id.slice(1, -1).split(',').map(id => parseInt(id, 10)).filter(id => !isNaN(id));
       return ids
         .map(id => this.services.find(s => s.id === id)?.name || 'Desconocido')
         .join(', ');

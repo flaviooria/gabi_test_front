@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 })
 export class RegisterPageComponent {
   public userForm: FormGroup;
+  public isLoading: boolean = false;
   
   constructor(
     private fb: FormBuilder,
@@ -33,16 +34,26 @@ export class RegisterPageComponent {
       this.userForm.markAllAsTouched();
       return;
     }
+    this.isLoading = true;
+    const password = this.userForm.get('password')?.value;
     
-    this.authService.signIn(this.userForm.value)
-    .subscribe( user => {
-      this.authService.login(user.email, user.password)
-      .subscribe( user => {
-        this.router.navigate(['/helper']);
-      })
-    })
-
-    this.userForm.reset();
+    this.authService.signIn(this.userForm.value).subscribe({
+      next: user => {
+        this.authService.login(user.email, password).subscribe({
+          next: user => {
+            this.router.navigate(['/helper']);
+          },
+          error: () => {
+            this.userForm.reset();
+            this.isLoading = false;
+          }
+        });
+      },
+      error: () => {
+        this.userForm.reset();
+        this.isLoading = false;
+      }
+    });
 
   }
   
