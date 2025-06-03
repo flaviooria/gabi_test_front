@@ -271,7 +271,8 @@ export class ServiceRequestPageComponent implements OnInit {
         this.serviceForm.reset();
       },
       error: (err) => {
-        this.alertService.error(err.error.message);
+        this.alertService.error('Error al crear el servicio');
+        // this.alertService.error(err.error.message);
         this.isLoading = false;
       }
     });

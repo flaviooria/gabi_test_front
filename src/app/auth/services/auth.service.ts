@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment.prod';
 import { User } from '../interfaces/user.interface';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
 import * as CryptoJS from 'crypto-js';
-import { Client } from '../../client/interfaces/client.interface';
+import { environment } from '../../environments/environment.prod';
 
 
 @Injectable({

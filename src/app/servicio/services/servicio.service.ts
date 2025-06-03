@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment.prod';
 import { HttpClient } from '@angular/common/http';
 import { ServicesTypes } from '../interfaces/servicesTypes.interface';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { Service } from '../interfaces/service.interface';
-import { ServiceTemplate } from '../interfaces/service-template';
+import { ServiceTemplate } from '../interfaces/service-template'
 import { response } from 'express';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'

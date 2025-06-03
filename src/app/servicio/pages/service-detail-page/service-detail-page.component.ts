@@ -97,12 +97,14 @@ export class ServiceDetailPageComponent implements OnInit {
 
   changeServiceStatus(status: string): void {
     this.isLoading = true;
+    console.log('Camviando a ', status);
 
     if (this.service) {
       this.servicioService.updateServiceStatus(this.service.id, status).subscribe({
         next: (updatedService) => {
           this.service = updatedService;
           this.alertService.success(`Servicio actualizado a ${status}`);
+
         },
         error: (err) => {
           console.error('Error al cambiar el estado del servicio:', err);
@@ -115,9 +117,9 @@ export class ServiceDetailPageComponent implements OnInit {
 
   acceptService(): void {
     this.changeServiceStatus('accepted');
-    setTimeout(() => {
-      location.reload();
-    }, 2000);
+    // setTimeout(() => {
+    //   location.reload();
+    // }, 4000);
   }
 
   rejectService(): void {
