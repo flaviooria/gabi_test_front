@@ -12,7 +12,7 @@ import { environment } from '../../environments/environment.prod';
 })
 export class WorkerService {
 
-  private baseURL: string = environment.baseURL;
+  private baseURL: string = environment.baseURL!;
 
   constructor(private httpClient: HttpClient) { }
 

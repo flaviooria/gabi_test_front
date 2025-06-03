@@ -5,14 +5,13 @@ import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
 import * as CryptoJS from 'crypto-js';
 import { environment } from '../../environments/environment.prod';
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private baseUrl: string = environment.baseURL;
-  private secretKey = environment.cryptoServiceKey;
+  private baseUrl: string = environment.baseURL!;
+  private secretKey = environment.cryptoServiceKey!;
   private user?: User;
 
   constructor(private httpClient: HttpClient) {

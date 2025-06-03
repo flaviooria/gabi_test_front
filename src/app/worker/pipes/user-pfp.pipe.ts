@@ -13,7 +13,7 @@ export class UserPfpPipe implements PipeTransform {
       return 'no_image.png'
     }
 
-    return `${environment.baseURL.replace('/api', '')}/user_pfp/${imagen}`;
+    return `${environment.baseURL!.replace('/api', '')}/user_pfp/${imagen}`;
 
   }
 }

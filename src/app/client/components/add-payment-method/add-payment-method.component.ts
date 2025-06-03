@@ -43,7 +43,7 @@ export class AddPaymentMethodComponent implements OnInit, AfterViewInit, OnDestr
 
     try {
       console.log('Cargando Stripe...');
-      this.stripe = await loadStripe(environment.stripePublicKey);
+      this.stripe = await loadStripe(environment.stripePublicKey!);
       if (!this.stripe) {
         this.cardError = 'Clave pública de Stripe no válida o no inicializada';
         console.error('Stripe no se inicializó correctamente');

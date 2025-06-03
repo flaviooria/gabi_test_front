@@ -1,7 +1,8 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
 #env
-/src/app/environments
+# /src/app/environments
+/.env
 
 # Compiled output
 /dist

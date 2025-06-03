@@ -10,7 +10,7 @@ import { environment } from '../../environments/environment.prod';
 })
 export class ClientService {
 
-  private baseURL: string = environment.baseURL
+  private baseURL: string = environment.baseURL!;
 
   constructor(private httpClient: HttpClient) { }
 
