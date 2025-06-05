@@ -7,7 +7,10 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:haus2house": "node dist/haus2house/server/server.mjs"
+    "serve:ssr:haus2house": "node dist/haus2house/server/server.mjs",
+    "build:ssr": "ng build && ng run haus2house:server",
+    "prerender": "ng run haus2house:prerender",
+    "build:netlify": "npm run build:ssr && npm run prerender"
   },
   "private": true,
   "dependencies": {
